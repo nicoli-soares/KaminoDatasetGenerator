@@ -265,7 +265,7 @@ def _process_clone(entry_id, clone, entry, tests_list, models, LLM_OPTS, out_pat
 
         # Retry with this model up to MAX_RETRIES
         for n in range(1, MAX_RETRIES + 1):
-            print(f" Reprompting clone of entry {entry["id"]}...")
+            print(f" Reprompting clone of entry {entry['id']}...")
             clone, failing_tests, codebleu = _reprompt_clone(
                 clone=clone,
                 entry=entry,
