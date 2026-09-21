@@ -1,0 +1,374 @@
+# -*- coding: utf-8 -*-
+"""
+Pipeline automatizado de traducao BigCodeBench (Python) -> C
+
+Segue a mesma filosofia das 3 etapas centrais do Kamino original:
+  1. Generation  -> pede ao LLM (via Ollama) para traduzir Python para C
+  2. Testing     -> compila e roda os testes traduzidos automaticamente
+  3. Repairing   -> se falhar, reenvia o erro ao LLM para tentar corrigir
+
+Requisitos:
+  - Ollama rodando localmente, com o modelo configurado em
+    pipeline/resources/ollama_config_local.json ja baixado (ollama pull)
+  - Biblioteca 'ollama' instalada (ja vem no requirements.txt do projeto)
+  - gcc disponivel no PATH
+
+Como usar:
+  python pipeline_traducao_c.py
+
+Saida:
+  - traducoes_automaticas/<ID>/funcao.py   (codigo Python original)
+  - traducoes_automaticas/<ID>/funcao.c    (traducao gerada)
+  - traducoes_automaticas/<ID>/teste.c     (testes traduzidos)
+  - relatorio_pipeline.json                (resumo de sucesso/falha)
+"""
+
+import json
+import os
+import re
+import subprocess
+import shutil
+
+import ollama
+
+# ============================================================
+# CONFIGURACAO
+# ============================================================
+
+CAMINHO_DATASET = "dataset/bigcodebench_normalized_filtered.json"
+CAMINHO_CONFIG_OLLAMA = "pipeline/resources/ollama_config_local.json"
+CAMINHO_GUIA = "guia_traducao_python_c.md"
+PASTA_SAIDA = "traducoes_automaticas"
+RELATORIO_SAIDA = "relatorio_pipeline.json"
+
+MAX_TENTATIVAS = 3          # tentativas de reparo por entrada, antes de descartar
+TAMANHO_LOTE = 20           # quantas entradas processar nesta execucao
+TIMEOUT_COMPILACAO = 10     # segundos
+TIMEOUT_EXECUCAO = 10       # segundos
+
+# Mesmas listas de exclusao do guia / filtrar_piloto.py
+LIBS_PROBLEMATICAS = {
+    "random", "numpy", "pandas", "os", "unittest.mock", "statistics",
+    "sklearn", "matplotlib", "scipy",
+    "requests", "flask", "flask_restful", "django", "urllib", "socket",
+    "bs4", "http", "smtplib", "ftplib",
+    "psutil", "platform", "subprocess", "shutil", "multiprocessing",
+    "threading",
+    "zlib", "gzip", "cryptography", "hashlib", "zipfile", "struct",
+    "pickle",
+    "sqlite3", "sqlalchemy",
+    "ipaddress",
+    "nltk", "faker", "geopy", "folium", "docx",
+    "glob", "xmltodict", "prettytable", "unicodedata", "pytz",
+    "inspect", "types", "yaml", "dateutil",
+}
+
+PADROES_NAO_DETERMINISTICOS = [
+    ".now(", "datetime.today(", "time.time(", "time.localtime(",
+]
+
+MAX_LINHAS_CODIGO = 20  # um pouco mais permissivo que no piloto
+
+# IDs ja traduzidos manualmente (10 da Semana 3-4 + 5 do piloto) - nao repetir
+JA_TRADUZIDAS = {
+    "BigCodeBench/4", "BigCodeBench/297", "BigCodeBench/254",
+    "BigCodeBench/270", "BigCodeBench/97", "BigCodeBench/172",
+    "BigCodeBench/178", "BigCodeBench/358", "BigCodeBench/7",
+    "BigCodeBench/96", "BigCodeBench/667", "BigCodeBench/327",
+    "BigCodeBench/669", "BigCodeBench/666", "BigCodeBench/682",
+}
+
+
+# ============================================================
+# ETAPA 0: SELECAO DE CANDIDATAS (mesma logica do filtrar_piloto.py)
+# ============================================================
+
+def eh_candidata_boa(entrada):
+    if entrada.get("id") in JA_TRADUZIDAS:
+        return False
+
+    codigo = entrada.get("original_code", "")
+    metadata = entrada.get("metadata", {})
+    libs_str = metadata.get("libs", "[]")
+
+    try:
+        libs = eval(libs_str) if isinstance(libs_str, str) else libs_str
+    except Exception:
+        libs = []
+
+    if any(lib in LIBS_PROBLEMATICAS for lib in libs):
+        return False
+
+    if metadata.get("split") and metadata["split"] != "easy":
+        return False
+
+    num_linhas = len([l for l in codigo.split("\n") if l.strip()])
+    if num_linhas > MAX_LINHAS_CODIGO:
+        return False
+
+    if "random." in codigo or "np." in codigo or "numpy." in codigo:
+        return False
+
+    if any(padrao in codigo for padrao in PADROES_NAO_DETERMINISTICOS):
+        return False
+
+    if "class " in codigo:
+        return False
+
+    return True
+
+
+def carregar_candidatas():
+    with open(CAMINHO_DATASET, "r", encoding="utf-8") as f:
+        dados = json.load(f)
+    candidatas = [e for e in dados if eh_candidata_boa(e)]
+    return candidatas[:TAMANHO_LOTE]
+
+
+# ============================================================
+# CONFIGURACAO DO LLM
+# ============================================================
+
+def carregar_modelo():
+    with open(CAMINHO_CONFIG_OLLAMA, "r", encoding="utf-8") as f:
+        config = json.load(f)
+    return config.get("model", "qwen2.5-coder:7b")
+
+
+def carregar_guia():
+    if os.path.exists(CAMINHO_GUIA):
+        with open(CAMINHO_GUIA, "r", encoding="utf-8") as f:
+            return f.read()
+    return "(guia nao encontrado - traduza seguindo boas praticas de C)"
+
+
+# ============================================================
+# ETAPA 1: GENERATION (montar prompt e chamar o LLM)
+# ============================================================
+
+def montar_prompt_inicial(entrada, guia_texto):
+    codigo = entrada["original_code"]
+    testes = "\n\n".join(entrada.get("test", []))
+
+    prompt = f"""Voce e um tradutor de codigo Python para C, seguindo ESTRITAMENTE
+as regras abaixo (extraidas de um guia validado em 15 traducoes anteriores):
+
+{guia_texto}
+
+TAREFA: Traduza a funcao Python abaixo para C, e traduza tambem os testes
+reais fornecidos (NAO invente novos testes). Se algum teste depender de
+random, numpy, Faker, ou checar apenas tipo (isinstance), OMITA esse teste
+especifico e explique o motivo em um comentario no codigo.
+
+Responda EXATAMENTE neste formato, sem texto adicional fora dos blocos:
+
+```c_funcao
+<a funcao traduzida em C aqui, incluindo includes e structs necessarios>
+```
+
+```c_teste
+<os testes traduzidos em C aqui, incluindo a funcao main() que os executa>
+```
+
+Codigo Python original:
+```python
+{codigo}
+```
+
+Testes Python originais:
+```python
+{testes}
+```
+"""
+    return prompt
+
+
+def montar_prompt_reparo(entrada, codigo_anterior, teste_anterior, mensagem_erro):
+    return f"""A traducao anterior falhou. Aqui esta o erro exato:
+
+ERRO:
+{mensagem_erro}
+
+Codigo C da funcao (tentativa anterior):
+```c
+{codigo_anterior}
+```
+
+Codigo C dos testes (tentativa anterior):
+```c
+{teste_anterior}
+```
+
+Corrija o problema e responda de novo EXATAMENTE no formato:
+
+```c_funcao
+<funcao corrigida>
+```
+
+```c_teste
+<testes corrigidos>
+```
+"""
+
+
+def chamar_llm(modelo, mensagens):
+    resposta = ollama.chat(model=modelo, messages=mensagens)
+    return resposta["message"]["content"]
+
+
+def extrair_blocos(texto_resposta):
+    """Extrai os blocos c_funcao e c_teste da resposta do LLM."""
+    match_funcao = re.search(r"```c_funcao\s*(.*?)```", texto_resposta, re.DOTALL)
+    match_teste = re.search(r"```c_teste\s*(.*?)```", texto_resposta, re.DOTALL)
+
+    codigo_funcao = match_funcao.group(1).strip() if match_funcao else None
+    codigo_teste = match_teste.group(1).strip() if match_teste else None
+
+    return codigo_funcao, codigo_teste
+
+
+# ============================================================
+# ETAPA 2: TESTING (compilar e rodar)
+# ============================================================
+
+def compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho):
+    os.makedirs(pasta_trabalho, exist_ok=True)
+    caminho_c = os.path.join(pasta_trabalho, "programa.c")
+    caminho_bin = os.path.join(pasta_trabalho, "programa")
+
+    # Junta funcao + teste em um unico arquivo compilavel
+    with open(caminho_c, "w", encoding="utf-8") as f:
+        f.write(codigo_funcao + "\n\n" + codigo_teste + "\n")
+
+    # Sempre linka -lm (Regra: seguro mesmo se nao usar math.h)
+    resultado_compilacao = subprocess.run(
+        ["gcc", "-o", caminho_bin, caminho_c, "-lm"],
+        capture_output=True, text=True, timeout=TIMEOUT_COMPILACAO
+    )
+
+    if resultado_compilacao.returncode != 0:
+        return False, f"ERRO DE COMPILACAO:\n{resultado_compilacao.stderr}"
+
+    try:
+        resultado_execucao = subprocess.run(
+            [caminho_bin], capture_output=True, text=True,
+            timeout=TIMEOUT_EXECUCAO
+        )
+    except subprocess.TimeoutExpired:
+        return False, "ERRO: programa entrou em loop infinito ou demorou demais (timeout)"
+
+    if resultado_execucao.returncode != 0:
+        return False, (
+            f"ERRO DE EXECUCAO (codigo de saida {resultado_execucao.returncode}):\n"
+            f"{resultado_execucao.stdout}\n{resultado_execucao.stderr}"
+        )
+
+    return True, resultado_execucao.stdout
+
+
+# ============================================================
+# ETAPA 3: REPAIRING + LOOP PRINCIPAL
+# ============================================================
+
+def processar_entrada(entrada, modelo, guia_texto):
+    entry_id = entrada["id"]
+    id_seguro = entry_id.replace("/", "_")
+    pasta_trabalho = os.path.join(PASTA_SAIDA, id_seguro)
+
+    mensagens = [
+        {"role": "user", "content": montar_prompt_inicial(entrada, guia_texto)}
+    ]
+
+    codigo_funcao, codigo_teste = None, None
+
+    for tentativa in range(1, MAX_TENTATIVAS + 1):
+        print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
+
+        resposta = chamar_llm(modelo, mensagens)
+        codigo_funcao, codigo_teste = extrair_blocos(resposta)
+
+        if codigo_funcao is None or codigo_teste is None:
+            erro = "Resposta do LLM nao seguiu o formato esperado (blocos c_funcao/c_teste ausentes)"
+            mensagens.append({"role": "assistant", "content": resposta})
+            mensagens.append({"role": "user", "content": f"Formato invalido. {erro}. Responda novamente no formato correto."})
+            continue
+
+        sucesso, saida_ou_erro = compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho)
+
+        if sucesso:
+            return {
+                "id": entry_id, "status": "sucesso", "tentativas": tentativa,
+                "saida": saida_ou_erro
+            }, codigo_funcao, codigo_teste
+
+        # Falhou -> prepara reparo
+        mensagens.append({"role": "assistant", "content": resposta})
+        mensagens.append({
+            "role": "user",
+            "content": montar_prompt_reparo(entrada, codigo_funcao, codigo_teste, saida_ou_erro)
+        })
+
+    # Esgotou as tentativas -> descarta
+    shutil.rmtree(pasta_trabalho, ignore_errors=True)
+    return {
+        "id": entry_id, "status": "falha", "tentativas": MAX_TENTATIVAS,
+        "ultimo_erro": saida_ou_erro
+    }, None, None
+
+
+def salvar_traducao_valida(entrada, codigo_funcao, codigo_teste):
+    entry_id = entrada["id"]
+    id_seguro = entry_id.replace("/", "_")
+    pasta = os.path.join(PASTA_SAIDA, id_seguro)
+    os.makedirs(pasta, exist_ok=True)
+
+    with open(os.path.join(pasta, "funcao.py"), "w", encoding="utf-8") as f:
+        f.write(entrada["original_code"])
+
+    with open(os.path.join(pasta, "funcao.c"), "w", encoding="utf-8") as f:
+        f.write(codigo_funcao)
+
+    with open(os.path.join(pasta, "teste.c"), "w", encoding="utf-8") as f:
+        f.write(codigo_teste)
+
+
+def main():
+    print("Carregando modelo, guia e candidatas...")
+    modelo = carregar_modelo()
+    guia_texto = carregar_guia()
+    candidatas = carregar_candidatas()
+
+    print(f"Modelo: {modelo}")
+    print(f"Candidatas selecionadas para este lote: {len(candidatas)}\n")
+
+    os.makedirs(PASTA_SAIDA, exist_ok=True)
+    relatorio = []
+
+    for i, entrada in enumerate(candidatas, start=1):
+        print(f"[{i}/{len(candidatas)}] Processando {entrada['id']}...")
+        resultado, codigo_funcao, codigo_teste = processar_entrada(entrada, modelo, guia_texto)
+        relatorio.append(resultado)
+
+        if resultado["status"] == "sucesso":
+            salvar_traducao_valida(entrada, codigo_funcao, codigo_teste)
+            print(f"  -> SUCESSO (tentativa {resultado['tentativas']})\n")
+        else:
+            print(f"  -> DESCARTADA apos {resultado['tentativas']} tentativas\n")
+
+    sucessos = [r for r in relatorio if r["status"] == "sucesso"]
+    falhas = [r for r in relatorio if r["status"] == "falha"]
+
+    print("=" * 60)
+    print(f"RESUMO: {len(sucessos)} sucesso(s), {len(falhas)} falha(s)")
+    print(f"Taxa de sucesso: {len(sucessos) / len(candidatas) * 100:.1f}%")
+    print("=" * 60)
+
+    with open(RELATORIO_SAIDA, "w", encoding="utf-8") as f:
+        json.dump(relatorio, f, indent=2, ensure_ascii=False)
+
+    print(f"\nRelatorio detalhado salvo em: {RELATORIO_SAIDA}")
+    print(f"Traducoes validas salvas em: {PASTA_SAIDA}/")
+
+
+if __name__ == "__main__":
+    main()
