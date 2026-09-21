@@ -42,7 +42,7 @@ PASTA_SAIDA = "traducoes_automaticas"
 RELATORIO_SAIDA = "relatorio_pipeline.json"
 
 MAX_TENTATIVAS = 3          # tentativas de reparo por entrada, antes de descartar
-TAMANHO_LOTE = 20           # quantas entradas processar nesta execucao
+TAMANHO_LOTE = 5           # quantas entradas processar nesta execucao
 TIMEOUT_COMPILACAO = 10     # segundos
 TIMEOUT_EXECUCAO = 10       # segundos
 
