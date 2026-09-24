@@ -14,18 +14,20 @@ Requisitos:
   - gcc disponivel no PATH
 
 Como usar:
-  python pipeline_traducao_c.py
+  python pipeline_traducao_c.py                    (usa o modelo do config)
+  python pipeline_traducao_c.py deepseek-r1:14b     (forca um modelo especifico)
+  python pipeline_traducao_c.py qwen2.5:3b          (ideal para comparar modelos)
 
-Saida:
-  - traducoes_automaticas/<ID>/funcao.py   (codigo Python original)
-  - traducoes_automaticas/<ID>/funcao.c    (traducao gerada)
-  - traducoes_automaticas/<ID>/teste.c     (testes traduzidos)
-  - relatorio_pipeline.json                (resumo de sucesso/falha)
+Saida (nomeada por modelo, para nao sobrescrever ao comparar varios):
+  - traducoes_automaticas_<modelo>/<ID>/funcao.py   (codigo Python original)
+  - traducoes_automaticas_<modelo>/<ID>/programa.c  (traducao + testes gerados)
+  - relatorio_pipeline_<modelo>.json                (resumo de sucesso/falha)
 """
 
 import json
 import os
 import re
+import sys
 import subprocess
 import shutil
 
@@ -38,11 +40,14 @@ import ollama
 CAMINHO_DATASET = "dataset/bigcodebench_normalized_filtered.json"
 CAMINHO_CONFIG_OLLAMA = "pipeline/resources/ollama_config_local.json"
 CAMINHO_GUIA = "guia_traducao_python_c.md"
-PASTA_SAIDA = "traducoes_automaticas"
-RELATORIO_SAIDA = "relatorio_pipeline.json"
 
-MAX_TENTATIVAS = 3          # tentativas de reparo por entrada, antes de descartar
+MAX_TENTATIVAS = 5          # tentativas de reparo por entrada, antes de descartar
 TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao
+
+# Definidos em main(), com base no modelo escolhido (permite comparar
+# resultados de varios modelos sem que um sobrescreva o outro)
+PASTA_SAIDA = None
+RELATORIO_SAIDA = None
 TIMEOUT_COMPILACAO = 10     # segundos
 TIMEOUT_EXECUCAO = 10       # segundos
 
@@ -115,6 +120,14 @@ def eh_candidata_boa(entrada):
     if "class " in codigo:
         return False
 
+    # Exclui casos com listas aninhadas / matrizes (list of lists), que se
+    # mostraram uma fonte recorrente de erro tanto para traducao manual
+    # quanto automatizada (confusao de niveis de ponteiro em C)
+    params_str = entrada.get("metadata", {}).get("params", "")
+    padroes_lista_aninhada = ["list of lists", "list_of_lists", "List[List[", "matrix", "matriz"]
+    if any(p.lower() in codigo.lower() or p.lower() in params_str.lower() for p in padroes_lista_aninhada):
+        return False
+
     return True
 
 
@@ -130,10 +143,20 @@ def carregar_candidatas():
 # ============================================================
 
 def carregar_modelo():
+    # Se um modelo foi passado como argumento de linha de comando, usa ele
+    # (permite comparar modelos sem precisar editar o arquivo de config)
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+
     with open(CAMINHO_CONFIG_OLLAMA, "r", encoding="utf-8") as f:
         config = json.load(f)
     # O campo "model" fica aninhado dentro de "json", nao na raiz do arquivo
     return config.get("json", {}).get("model", "qwen2.5-coder:7b")
+
+
+def nome_seguro_modelo(modelo):
+    """Converte o nome do modelo em algo seguro para usar em nomes de arquivo/pasta."""
+    return re.sub(r'[^\w\-.]', '_', modelo)
 
 
 def carregar_guia():
@@ -384,10 +407,18 @@ def salvar_traducao_valida(entrada, codigo_programa):
 
 
 def main():
+    global PASTA_SAIDA, RELATORIO_SAIDA
+
     print("Carregando modelo, guia e candidatas...")
     modelo = carregar_modelo()
     guia_texto = carregar_guia()
     candidatas = carregar_candidatas()
+
+    # Nomeia a saida com base no modelo, para poder comparar varios
+    # modelos sem que a execucao de um sobrescreva o resultado do outro
+    sufixo = nome_seguro_modelo(modelo)
+    PASTA_SAIDA = f"traducoes_automaticas_{sufixo}"
+    RELATORIO_SAIDA = f"relatorio_pipeline_{sufixo}.json"
 
     print(f"Modelo: {modelo}")
     print(f"Candidatas selecionadas para este lote: {len(candidatas)}\n")
@@ -410,6 +441,7 @@ def main():
     falhas = [r for r in relatorio if r["status"] == "falha"]
 
     print("=" * 60)
+    print(f"MODELO: {modelo}")
     print(f"RESUMO: {len(sucessos)} sucesso(s), {len(falhas)} falha(s)")
     print(f"Taxa de sucesso: {len(sucessos) / len(candidatas) * 100:.1f}%")
     print("=" * 60)
