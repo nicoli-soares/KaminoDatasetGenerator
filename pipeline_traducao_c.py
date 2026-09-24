@@ -276,9 +276,27 @@ def compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho):
     codigo_teste_limpo = remover_includes(codigo_teste)
 
     # Deteccao precoce de duplicacao (Causa raiz identificada no piloto:
-    # o LLM as vezes repete a funcao inteira dentro do bloco de teste).
+    # o LLM as vezes repete funcoes inteiras entre os dois blocos).
     # Um erro claro aqui ajuda mais o LLM a se corrigir do que a cascata
-    # de erros confusos que o gcc gera para "redefinition of main"
+    # de erros confusos que o gcc gera para "redefinition of X"
+    def nomes_de_funcoes(codigo):
+        # Encontra padroes tipo "tipo nome(" no inicio de linha (definicoes de funcao)
+        return set(re.findall(r'^\s*[\w\*]+\s+(\w+)\s*\([^;]*\)\s*\{', codigo, re.MULTILINE))
+
+    funcoes_funcao = nomes_de_funcoes(codigo_funcao_limpo)
+    funcoes_teste = nomes_de_funcoes(codigo_teste_limpo)
+    duplicadas = funcoes_funcao & funcoes_teste
+
+    if duplicadas:
+        return False, (
+            f"ERRO DE DUPLICACAO: as funcoes {', '.join(duplicadas)} aparecem "
+            f"definidas tanto no bloco c_funcao quanto no bloco c_teste. "
+            f"Cada funcao deve ser definida em APENAS UM dos dois blocos - "
+            f"normalmente as funcoes auxiliares e a funcao principal vao no "
+            f"c_funcao, e o bloco c_teste so deve conter as funcoes de teste "
+            f"(test_case_N) e o main(), sem repetir nada do c_funcao."
+        )
+
     if codigo_teste_limpo.count("int main(") + codigo_teste_limpo.count("void main(") > 1:
         return False, (
             "ERRO DE DUPLICACAO: o bloco c_teste contem mais de uma funcao "
