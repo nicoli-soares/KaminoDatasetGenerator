@@ -42,7 +42,7 @@ PASTA_SAIDA = "traducoes_automaticas"
 RELATORIO_SAIDA = "relatorio_pipeline.json"
 
 MAX_TENTATIVAS = 3          # tentativas de reparo por entrada, antes de descartar
-TAMANHO_LOTE = 5           # quantas entradas processar nesta execucao
+TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao
 TIMEOUT_COMPILACAO = 10     # segundos
 TIMEOUT_EXECUCAO = 10       # segundos
 
@@ -132,7 +132,8 @@ def carregar_candidatas():
 def carregar_modelo():
     with open(CAMINHO_CONFIG_OLLAMA, "r", encoding="utf-8") as f:
         config = json.load(f)
-    return config.get("json",{}).get("model", "qwen2.5-coder:7b")
+    # O campo "model" fica aninhado dentro de "json", nao na raiz do arquivo
+    return config.get("json", {}).get("model", "qwen2.5-coder:7b")
 
 
 def carregar_guia():
@@ -160,14 +161,30 @@ reais fornecidos (NAO invente novos testes). Se algum teste depender de
 random, numpy, Faker, ou checar apenas tipo (isinstance), OMITA esse teste
 especifico e explique o motivo em um comentario no codigo.
 
+REGRAS CRITICAS DE FORMATO (sao a causa mais comum de falha - siga com atencao):
+1. O bloco c_funcao deve conter APENAS: structs/typedefs necessarios e a
+   funcao traduzida em si. NUNCA inclua a funcao main() no bloco c_funcao.
+   NUNCA repita o codigo da funcao dentro do bloco c_teste.
+2. O bloco c_teste deve conter APENAS: funcoes auxiliares de teste e a
+   funcao main() que executa os testes. NAO repita structs ou a funcao
+   principal - elas ja estarao disponiveis a partir do bloco c_funcao.
+3. NAO use #include de arquivos personalizados (como "task_func.h" ou
+   qualquer .h que voce mesmo inventar) - o codigo inteiro deve ser
+   autocontido nos dois blocos, sem arquivos externos.
+4. NAO inclua #include de bibliotecas padrao (stdio.h, stdlib.h, string.h,
+   math.h, ctype.h) - isso ja e adicionado automaticamente. Comece direto
+   pelas structs/funcoes.
+5. Todo tipo customizado (struct, typedef) usado deve ser definido no
+   bloco c_funcao antes de ser usado - nunca use um tipo sem defini-lo.
+
 Responda EXATAMENTE neste formato, sem texto adicional fora dos blocos:
 
 ```c_funcao
-<a funcao traduzida em C aqui, incluindo includes e structs necessarios>
+<APENAS structs/typedefs necessarios e a funcao traduzida - sem main(), sem includes>
 ```
 
 ```c_teste
-<os testes traduzidos em C aqui, incluindo a funcao main() que os executa>
+<APENAS funcoes auxiliares de teste e main() - sem repetir a funcao ou structs, sem includes>
 ```
 
 Codigo Python original:
@@ -236,9 +253,44 @@ def compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho):
     caminho_c = os.path.join(pasta_trabalho, "programa.c")
     caminho_bin = os.path.join(pasta_trabalho, "programa")
 
-    # Junta funcao + teste em um unico arquivo compilavel
+    # Includes padrao adicionados automaticamente - nao dependemos do LLM
+    # lembrar disso (Causa raiz identificada no piloto: includes ausentes)
+    includes_padrao = (
+        "#include <stdio.h>\n"
+        "#include <stdlib.h>\n"
+        "#include <string.h>\n"
+        "#include <math.h>\n"
+        "#include <ctype.h>\n"
+        "#include <limits.h>\n"
+        "#include <assert.h>\n\n"
+    )
+
+    # Remove qualquer #include que o LLM tenha gerado por conta propria
+    # (tanto includes padrao duplicados quanto headers customizados
+    # inventados, como "task_func.h", que nunca existem de verdade)
+    def remover_includes(codigo):
+        linhas = codigo.split("\n")
+        return "\n".join(l for l in linhas if not l.strip().startswith("#include"))
+
+    codigo_funcao_limpo = remover_includes(codigo_funcao)
+    codigo_teste_limpo = remover_includes(codigo_teste)
+
+    # Deteccao precoce de duplicacao (Causa raiz identificada no piloto:
+    # o LLM as vezes repete a funcao inteira dentro do bloco de teste).
+    # Um erro claro aqui ajuda mais o LLM a se corrigir do que a cascata
+    # de erros confusos que o gcc gera para "redefinition of main"
+    if codigo_teste_limpo.count("int main(") + codigo_teste_limpo.count("void main(") > 1:
+        return False, (
+            "ERRO DE DUPLICACAO: o bloco c_teste contem mais de uma funcao "
+            "main(). Isso normalmente significa que voce copiou codigo do "
+            "bloco c_funcao para dentro do c_teste por engano. O bloco "
+            "c_teste deve ter EXATAMENTE UMA funcao main(), sem repetir "
+            "nenhuma struct ou funcao ja escrita no bloco c_funcao."
+        )
+
+    # Junta includes padrao + funcao + teste em um unico arquivo compilavel
     with open(caminho_c, "w", encoding="utf-8") as f:
-        f.write(codigo_funcao + "\n\n" + codigo_teste + "\n")
+        f.write(includes_padrao + codigo_funcao_limpo + "\n\n" + codigo_teste_limpo + "\n")
 
     # Sempre linka -lm (Regra: seguro mesmo se nao usar math.h)
     resultado_compilacao = subprocess.run(
@@ -280,7 +332,7 @@ def processar_entrada(entrada, modelo, guia_texto):
     ]
 
     codigo_funcao, codigo_teste = None, None
-    saida_ou_erro= "Nenhuma tentativa produziu resultado (erro inesperado)"
+    saida_ou_erro = "Nenhuma tentativa produziu resultado (erro inesperado)"
 
     for tentativa in range(1, MAX_TENTATIVAS + 1):
         print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
