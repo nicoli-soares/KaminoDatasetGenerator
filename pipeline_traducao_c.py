@@ -132,7 +132,7 @@ def carregar_candidatas():
 def carregar_modelo():
     with open(CAMINHO_CONFIG_OLLAMA, "r", encoding="utf-8") as f:
         config = json.load(f)
-    return config.get("model", "qwen2.5-coder:7b")
+    return config.get("json",{}).get("model", "qwen2.5-coder:7b")
 
 
 def carregar_guia():
@@ -280,6 +280,7 @@ def processar_entrada(entrada, modelo, guia_texto):
     ]
 
     codigo_funcao, codigo_teste = None, None
+    saida_ou_erro= "Nenhuma tentativa produziu resultado (erro inesperado)"
 
     for tentativa in range(1, MAX_TENTATIVAS + 1):
         print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
@@ -288,9 +289,9 @@ def processar_entrada(entrada, modelo, guia_texto):
         codigo_funcao, codigo_teste = extrair_blocos(resposta)
 
         if codigo_funcao is None or codigo_teste is None:
-            erro = "Resposta do LLM nao seguiu o formato esperado (blocos c_funcao/c_teste ausentes)"
+            saida_ou_erro = "Resposta do LLM nao seguiu o formato esperado (blocos c_funcao/c_teste ausentes)"
             mensagens.append({"role": "assistant", "content": resposta})
-            mensagens.append({"role": "user", "content": f"Formato invalido. {erro}. Responda novamente no formato correto."})
+            mensagens.append({"role": "user", "content": f"Formato invalido. {saida_ou_erro}. Responda novamente no formato correto."})
             continue
 
         sucesso, saida_ou_erro = compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho)
