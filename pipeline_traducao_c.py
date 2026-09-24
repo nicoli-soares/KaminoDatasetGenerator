@@ -161,30 +161,28 @@ reais fornecidos (NAO invente novos testes). Se algum teste depender de
 random, numpy, Faker, ou checar apenas tipo (isinstance), OMITA esse teste
 especifico e explique o motivo em um comentario no codigo.
 
-REGRAS CRITICAS DE FORMATO (sao a causa mais comum de falha - siga com atencao):
-1. O bloco c_funcao deve conter APENAS: structs/typedefs necessarios e a
-   funcao traduzida em si. NUNCA inclua a funcao main() no bloco c_funcao.
-   NUNCA repita o codigo da funcao dentro do bloco c_teste.
-2. O bloco c_teste deve conter APENAS: funcoes auxiliares de teste e a
-   funcao main() que executa os testes. NAO repita structs ou a funcao
-   principal - elas ja estarao disponiveis a partir do bloco c_funcao.
-3. NAO use #include de arquivos personalizados (como "task_func.h" ou
-   qualquer .h que voce mesmo inventar) - o codigo inteiro deve ser
-   autocontido nos dois blocos, sem arquivos externos.
-4. NAO inclua #include de bibliotecas padrao (stdio.h, stdlib.h, string.h,
+REGRAS CRITICAS (sao a causa mais comum de falha - siga com atencao):
+1. Escreva TUDO em um UNICO bloco de codigo: a funcao traduzida, as funcoes
+   de teste, e a funcao main() que executa os testes - tudo junto, na ordem
+   que fizer sentido (structs/funcao primeiro, depois os testes, depois main).
+2. NAO use #include de arquivos personalizados (como "task_func.h" ou
+   qualquer .h que voce mesmo inventar) - o codigo deve ser totalmente
+   autocontido em um unico arquivo.
+3. NAO inclua #include de bibliotecas padrao (stdio.h, stdlib.h, string.h,
    math.h, ctype.h) - isso ja e adicionado automaticamente. Comece direto
    pelas structs/funcoes.
-5. Todo tipo customizado (struct, typedef) usado deve ser definido no
-   bloco c_funcao antes de ser usado - nunca use um tipo sem defini-lo.
+4. NUNCA chame uma funcao que voce mesmo nao implementou. C nao tem
+   bibliotecas equivalentes as bibliotecas Python (base64, html, textwrap,
+   json, yaml). Se precisar dessa logica, implemente voce mesmo em C puro.
+5. Todo tipo customizado (struct, typedef) usado deve ser definido antes de
+   ser usado, com um nome especifico para este problema (nunca use nomes
+   genericos de exemplo de forma literal).
 
-Responda EXATAMENTE neste formato, sem texto adicional fora dos blocos:
+Responda EXATAMENTE neste formato, sem texto adicional fora do bloco:
 
-```c_funcao
-<APENAS structs/typedefs necessarios e a funcao traduzida - sem main(), sem includes>
-```
-
-```c_teste
-<APENAS funcoes auxiliares de teste e main() - sem repetir a funcao ou structs, sem includes>
+```c_programa
+<codigo C completo: structs/typedefs necessarios, a funcao traduzida,
+as funcoes de teste, e a funcao main() que executa tudo - em um unico bloco>
 ```
 
 Codigo Python original:
@@ -200,30 +198,21 @@ Testes Python originais:
     return prompt
 
 
-def montar_prompt_reparo(entrada, codigo_anterior, teste_anterior, mensagem_erro):
+def montar_prompt_reparo(entrada, codigo_anterior, mensagem_erro):
     return f"""A traducao anterior falhou. Aqui esta o erro exato:
 
 ERRO:
 {mensagem_erro}
 
-Codigo C da funcao (tentativa anterior):
+Codigo C da tentativa anterior:
 ```c
 {codigo_anterior}
 ```
 
-Codigo C dos testes (tentativa anterior):
-```c
-{teste_anterior}
-```
-
 Corrija o problema e responda de novo EXATAMENTE no formato:
 
-```c_funcao
-<funcao corrigida>
-```
-
-```c_teste
-<testes corrigidos>
+```c_programa
+<codigo C completo corrigido>
 ```
 """
 
@@ -234,21 +223,16 @@ def chamar_llm(modelo, mensagens):
 
 
 def extrair_blocos(texto_resposta):
-    """Extrai os blocos c_funcao e c_teste da resposta do LLM."""
-    match_funcao = re.search(r"```c_funcao\s*(.*?)```", texto_resposta, re.DOTALL)
-    match_teste = re.search(r"```c_teste\s*(.*?)```", texto_resposta, re.DOTALL)
-
-    codigo_funcao = match_funcao.group(1).strip() if match_funcao else None
-    codigo_teste = match_teste.group(1).strip() if match_teste else None
-
-    return codigo_funcao, codigo_teste
+    """Extrai o bloco unico c_programa da resposta do LLM."""
+    match = re.search(r"```c_programa\s*(.*?)```", texto_resposta, re.DOTALL)
+    return match.group(1).strip() if match else None
 
 
 # ============================================================
 # ETAPA 2: TESTING (compilar e rodar)
 # ============================================================
 
-def compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho):
+def compilar_e_testar(codigo_programa, pasta_trabalho):
     os.makedirs(pasta_trabalho, exist_ok=True)
     caminho_c = os.path.join(pasta_trabalho, "programa.c")
     caminho_bin = os.path.join(pasta_trabalho, "programa")
@@ -272,43 +256,18 @@ def compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho):
         linhas = codigo.split("\n")
         return "\n".join(l for l in linhas if not l.strip().startswith("#include"))
 
-    codigo_funcao_limpo = remover_includes(codigo_funcao)
-    codigo_teste_limpo = remover_includes(codigo_teste)
+    codigo_limpo = remover_includes(codigo_programa)
 
-    # Deteccao precoce de duplicacao (Causa raiz identificada no piloto:
-    # o LLM as vezes repete funcoes inteiras entre os dois blocos).
-    # Um erro claro aqui ajuda mais o LLM a se corrigir do que a cascata
-    # de erros confusos que o gcc gera para "redefinition of X"
-    def nomes_de_funcoes(codigo):
-        # Encontra padroes tipo "tipo nome(" no inicio de linha (definicoes de funcao)
-        return set(re.findall(r'^\s*[\w\*]+\s+(\w+)\s*\([^;]*\)\s*\{', codigo, re.MULTILINE))
-
-    funcoes_funcao = nomes_de_funcoes(codigo_funcao_limpo)
-    funcoes_teste = nomes_de_funcoes(codigo_teste_limpo)
-    duplicadas = funcoes_funcao & funcoes_teste
-
-    if duplicadas:
+    # Verifica se ha mais de um main() dentro do proprio bloco unico
+    # (pode acontecer se o LLM, mesmo com um so bloco, ainda repetir algo)
+    if codigo_limpo.count("int main(") + codigo_limpo.count("void main(") > 1:
         return False, (
-            f"ERRO DE DUPLICACAO: as funcoes {', '.join(duplicadas)} aparecem "
-            f"definidas tanto no bloco c_funcao quanto no bloco c_teste. "
-            f"Cada funcao deve ser definida em APENAS UM dos dois blocos - "
-            f"normalmente as funcoes auxiliares e a funcao principal vao no "
-            f"c_funcao, e o bloco c_teste so deve conter as funcoes de teste "
-            f"(test_case_N) e o main(), sem repetir nada do c_funcao."
+            "ERRO: o codigo contem mais de uma funcao main(). Deve haver "
+            "EXATAMENTE UMA funcao main() em todo o programa."
         )
 
-    if codigo_teste_limpo.count("int main(") + codigo_teste_limpo.count("void main(") > 1:
-        return False, (
-            "ERRO DE DUPLICACAO: o bloco c_teste contem mais de uma funcao "
-            "main(). Isso normalmente significa que voce copiou codigo do "
-            "bloco c_funcao para dentro do c_teste por engano. O bloco "
-            "c_teste deve ter EXATAMENTE UMA funcao main(), sem repetir "
-            "nenhuma struct ou funcao ja escrita no bloco c_funcao."
-        )
-
-    # Junta includes padrao + funcao + teste em um unico arquivo compilavel
     with open(caminho_c, "w", encoding="utf-8") as f:
-        f.write(includes_padrao + codigo_funcao_limpo + "\n\n" + codigo_teste_limpo + "\n")
+        f.write(includes_padrao + codigo_limpo + "\n")
 
     # Sempre linka -lm (Regra: seguro mesmo se nao usar math.h)
     resultado_compilacao = subprocess.run(
@@ -349,34 +308,34 @@ def processar_entrada(entrada, modelo, guia_texto):
         {"role": "user", "content": montar_prompt_inicial(entrada, guia_texto)}
     ]
 
-    codigo_funcao, codigo_teste = None, None
+    codigo_programa = None
     saida_ou_erro = "Nenhuma tentativa produziu resultado (erro inesperado)"
 
     for tentativa in range(1, MAX_TENTATIVAS + 1):
         print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
 
         resposta = chamar_llm(modelo, mensagens)
-        codigo_funcao, codigo_teste = extrair_blocos(resposta)
+        codigo_programa = extrair_blocos(resposta)
 
-        if codigo_funcao is None or codigo_teste is None:
-            saida_ou_erro = "Resposta do LLM nao seguiu o formato esperado (blocos c_funcao/c_teste ausentes)"
+        if codigo_programa is None:
+            saida_ou_erro = "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
             mensagens.append({"role": "assistant", "content": resposta})
             mensagens.append({"role": "user", "content": f"Formato invalido. {saida_ou_erro}. Responda novamente no formato correto."})
             continue
 
-        sucesso, saida_ou_erro = compilar_e_testar(codigo_funcao, codigo_teste, pasta_trabalho)
+        sucesso, saida_ou_erro = compilar_e_testar(codigo_programa, pasta_trabalho)
 
         if sucesso:
             return {
                 "id": entry_id, "status": "sucesso", "tentativas": tentativa,
                 "saida": saida_ou_erro
-            }, codigo_funcao, codigo_teste
+            }, codigo_programa
 
         # Falhou -> prepara reparo
         mensagens.append({"role": "assistant", "content": resposta})
         mensagens.append({
             "role": "user",
-            "content": montar_prompt_reparo(entrada, codigo_funcao, codigo_teste, saida_ou_erro)
+            "content": montar_prompt_reparo(entrada, codigo_programa, saida_ou_erro)
         })
 
     # Esgotou as tentativas -> descarta
@@ -384,10 +343,10 @@ def processar_entrada(entrada, modelo, guia_texto):
     return {
         "id": entry_id, "status": "falha", "tentativas": MAX_TENTATIVAS,
         "ultimo_erro": saida_ou_erro
-    }, None, None
+    }, None
 
 
-def salvar_traducao_valida(entrada, codigo_funcao, codigo_teste):
+def salvar_traducao_valida(entrada, codigo_programa):
     entry_id = entrada["id"]
     id_seguro = entry_id.replace("/", "_")
     pasta = os.path.join(PASTA_SAIDA, id_seguro)
@@ -396,11 +355,13 @@ def salvar_traducao_valida(entrada, codigo_funcao, codigo_teste):
     with open(os.path.join(pasta, "funcao.py"), "w", encoding="utf-8") as f:
         f.write(entrada["original_code"])
 
-    with open(os.path.join(pasta, "funcao.c"), "w", encoding="utf-8") as f:
-        f.write(codigo_funcao)
-
-    with open(os.path.join(pasta, "teste.c"), "w", encoding="utf-8") as f:
-        f.write(codigo_teste)
+    # Nota: diferente das traducoes manuais (que separam funcao.c e teste.c),
+    # a geracao automatizada salva tudo em um unico arquivo programa.c.
+    # Essa e uma simplificacao deliberada: pedir ao LLM um unico bloco de
+    # codigo (em vez de dois blocos separados) eliminou um problema
+    # recorrente de duplicacao de codigo entre os blocos.
+    with open(os.path.join(pasta, "programa.c"), "w", encoding="utf-8") as f:
+        f.write(codigo_programa)
 
 
 def main():
@@ -417,11 +378,11 @@ def main():
 
     for i, entrada in enumerate(candidatas, start=1):
         print(f"[{i}/{len(candidatas)}] Processando {entrada['id']}...")
-        resultado, codigo_funcao, codigo_teste = processar_entrada(entrada, modelo, guia_texto)
+        resultado, codigo_programa = processar_entrada(entrada, modelo, guia_texto)
         relatorio.append(resultado)
 
         if resultado["status"] == "sucesso":
-            salvar_traducao_valida(entrada, codigo_funcao, codigo_teste)
+            salvar_traducao_valida(entrada, codigo_programa)
             print(f"  -> SUCESSO (tentativa {resultado['tentativas']})\n")
         else:
             print(f"  -> DESCARTADA apos {resultado['tentativas']} tentativas\n")
