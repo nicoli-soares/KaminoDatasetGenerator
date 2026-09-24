@@ -218,8 +218,17 @@ Corrija o problema e responda de novo EXATAMENTE no formato:
 
 
 def chamar_llm(modelo, mensagens):
-    resposta = ollama.chat(model=modelo, messages=mensagens)
-    return resposta["message"]["content"]
+    try:
+        resposta = ollama.chat(
+            model=modelo,
+            messages=mensagens,
+            options={"num_ctx": 16384}  # aumenta a janela de contexto (padrao do Ollama e so 4096)
+        )
+        return resposta["message"]["content"], None
+    except Exception as e:
+        # Nunca deixa um erro de comunicacao com o LLM derrubar o script inteiro -
+        # trata como uma tentativa falha, igual a um erro de compilacao/teste
+        return None, f"ERRO NA CHAMADA AO LLM: {e}"
 
 
 def extrair_blocos(texto_resposta):
@@ -314,7 +323,17 @@ def processar_entrada(entrada, modelo, guia_texto):
     for tentativa in range(1, MAX_TENTATIVAS + 1):
         print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
 
-        resposta = chamar_llm(modelo, mensagens)
+        resposta, erro_llm = chamar_llm(modelo, mensagens)
+
+        if erro_llm is not None:
+            # Falha na propria chamada ao LLM (ex: contexto excedido) -
+            # nao ha resposta para adicionar ao historico, entao encurtamos
+            # a conversa para a proxima tentativa (mantem so o prompt inicial)
+            saida_ou_erro = erro_llm
+            print(f"    (erro na chamada ao LLM: {erro_llm[:100]}...)")
+            mensagens = [{"role": "user", "content": montar_prompt_inicial(entrada, guia_texto)}]
+            continue
+
         codigo_programa = extrair_blocos(resposta)
 
         if codigo_programa is None:
