@@ -2,7 +2,7 @@
   "url": "http://localhost:11434/api/chat",
   "timeout": 600,
   "json": {
-    "model": "qwen2.5:3b",
+    "model": "deepseek-r1:14b",
     "messages": [],
     "stream": false,
     "think": false,
