@@ -15,11 +15,18 @@ Toda vez que o código Python usa `dict`, `Counter`, ou `defaultdict`, a traduç
 deve usar um **array de structs** contendo (chave, valor), com busca linear para
 verificar se a chave já existe.
 
+⚠️ IMPORTANTE: o nome da struct abaixo é só um EXEMPLO ilustrativo do padrão -
+NUNCA use o nome literal `NOME_DA_STRUCT_AQUI` no código real. Você deve criar
+um nome de struct novo e específico para cada problema (ex: `ContagemPalavra`,
+`ParProdutoQuantidade`, etc.), e SEMPRE escrever a definição completa da struct
+com `typedef struct { ... } NomeEscolhido;` antes de usá-la - nunca referencie
+um nome de struct sem defini-lo primeiro no mesmo bloco de código.
+
 ```c
 typedef struct {
     <tipo_da_chave> chave;
     <tipo_do_valor> valor;
-} ParChaveValor;
+} NOME_DA_STRUCT_AQUI;
 ```
 
 - Se a chave é numérica, comparar com `==`.
@@ -102,6 +109,16 @@ reproduz todos os testes é preferível a uma tradução literal desnecessariame
 complexa. Documentar SEMPRE essa simplificação como uma limitação conhecida
 (ela pode divergir do regex original em entradas fora do que foi testado).
 
+### 1.10. NUNCA chame uma função que você mesmo não implementou no código
+C não tem bibliotecas equivalentes às bibliotecas Python como `base64`, `html`,
+`textwrap`, `json`, `yaml`, etc. Se a função Python usa uma dessas bibliotecas,
+você deve IMPLEMENTAR a lógica necessária você mesmo, em C puro, dentro do
+mesmo código - nunca chame uma função como `base64_decode(...)` ou
+`html_unescape(...)` como se ela já existisse pronta em C. Se a lógica for
+complexa demais para implementar corretamente, prefira simplificar a tradução
+descrevendo a limitação em um comentário, em vez de inventar uma chamada de
+função que não existe (isso sempre causa erro de compilação).
+
 ## 2. Bibliotecas Python a EXCLUIR já na filtragem de candidatas
 
 Funções que importam qualquer uma destas bibliotecas devem ser descartadas
@@ -153,24 +170,8 @@ Antes de aceitar uma tradução gerada pelo LLM como válida, confirmar:
 
 ---
 
-## 6. Formato de prompt sugerido para o LLM (rascunho)
+## 6. Formato da resposta
 
-```
-Você é um tradutor de código Python para C, seguindo estas regras estritas:
-[colar as seções 1 e 2 deste documento]
-
-Traduza a função Python abaixo para C, e traduza também os testes reais
-fornecidos (não invente novos testes). Se algum teste depender de random,
-numpy ou Faker, omita-o e explique o motivo em um comentário.
-
-Código Python:
-<<<original_code>>>
-
-Testes Python:
-<<<test>>>
-
-Responda com dois blocos de código: a função em C, e os testes em C.
-```
-
-Este formato de prompt deve ser refinado durante o piloto (Fase 1), com base
-nos erros observados nas primeiras tentativas automatizadas.
+O formato exato do prompt e da resposta é definido pelo próprio pipeline
+(`pipeline_traducao_c.py`), que pede a tradução, os testes e a função `main()`
+juntos em UM ÚNICO bloco de código. Siga sempre o formato indicado na tarefa.

@@ -18,12 +18,25 @@ Como usar:
   python pipeline_traducao_c.py deepseek-r1:14b     (forca um modelo especifico)
   python pipeline_traducao_c.py qwen2.5:3b          (ideal para comparar modelos)
 
-Saida (nomeada por modelo, para nao sobrescrever ao comparar varios):
-  - traducoes_automaticas_<modelo>/<ID>/funcao.py   (codigo Python original)
-  - traducoes_automaticas_<modelo>/<ID>/programa.c  (traducao + testes gerados)
-  - relatorio_pipeline_<modelo>.json                (resumo de sucesso/falha)
+Opcoes (todas opcionais; sem elas o comportamento e o mesmo de antes):
+  --ponteiros          anexa ao guia a secao guia_ponteiros.md (padroes seguros
+                       de ponteiros/memoria em C)
+  --incluir-aninhadas  desliga o filtro de listas aninhadas/matrizes (necessario
+                       para testar se a secao de ponteiros ajuda justamente
+                       nesses casos)
+  --lote N             quantas entradas processar (padrao: 5)
+
+Exemplo de comparacao A/B (mesmo modelo, mesmas entradas):
+  python pipeline_traducao_c.py deepseek-r1:14b --incluir-aninhadas
+  python pipeline_traducao_c.py deepseek-r1:14b --incluir-aninhadas --ponteiros
+
+Saida (nomeada por modelo e opcoes, para nao sobrescrever ao comparar):
+  - traducoes_automaticas_<modelo>[_aninhadas][_ponteiros]/<ID>/funcao.py
+  - traducoes_automaticas_<modelo>[_aninhadas][_ponteiros]/<ID>/programa.c
+  - relatorio_pipeline_<modelo>[_aninhadas][_ponteiros].json
 """
 
+import argparse
 import json
 import os
 import re
@@ -40,14 +53,16 @@ import ollama
 CAMINHO_DATASET = "dataset/bigcodebench_normalized_filtered.json"
 CAMINHO_CONFIG_OLLAMA = "pipeline/resources/ollama_config_local.json"
 CAMINHO_GUIA = "guia_traducao_python_c.md"
+CAMINHO_GUIA_PONTEIROS = "guia_ponteiros.md"
 
 MAX_TENTATIVAS = 5          # tentativas de reparo por entrada, antes de descartar
-TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao
+TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao (--lote N altera)
 
-# Definidos em main(), com base no modelo escolhido (permite comparar
-# resultados de varios modelos sem que um sobrescreva o outro)
+# Definidos em main(), com base no modelo e nas opcoes escolhidas (permite
+# comparar varias execucoes sem que uma sobrescreva o resultado da outra)
 PASTA_SAIDA = None
 RELATORIO_SAIDA = None
+INCLUIR_ANINHADAS = False   # --incluir-aninhadas desliga o filtro de listas aninhadas
 TIMEOUT_COMPILACAO = 10     # segundos
 TIMEOUT_EXECUCAO = 10       # segundos
 
@@ -123,10 +138,12 @@ def eh_candidata_boa(entrada):
     # Exclui casos com listas aninhadas / matrizes (list of lists), que se
     # mostraram uma fonte recorrente de erro tanto para traducao manual
     # quanto automatizada (confusao de niveis de ponteiro em C)
-    params_str = entrada.get("metadata", {}).get("params", "")
-    padroes_lista_aninhada = ["list of lists", "list_of_lists", "List[List[", "matrix", "matriz"]
-    if any(p.lower() in codigo.lower() or p.lower() in params_str.lower() for p in padroes_lista_aninhada):
-        return False
+    # (--incluir-aninhadas desliga este filtro, para testar o guia de ponteiros)
+    if not INCLUIR_ANINHADAS:
+        params_str = entrada.get("metadata", {}).get("params", "")
+        padroes_lista_aninhada = ["list of lists", "list_of_lists", "List[List[", "matrix", "matriz"]
+        if any(p.lower() in codigo.lower() or p.lower() in params_str.lower() for p in padroes_lista_aninhada):
+            return False
 
     return True
 
@@ -142,11 +159,11 @@ def carregar_candidatas():
 # CONFIGURACAO DO LLM
 # ============================================================
 
-def carregar_modelo():
+def carregar_modelo(modelo_arg=None):
     # Se um modelo foi passado como argumento de linha de comando, usa ele
     # (permite comparar modelos sem precisar editar o arquivo de config)
-    if len(sys.argv) > 1:
-        return sys.argv[1]
+    if modelo_arg:
+        return modelo_arg
 
     with open(CAMINHO_CONFIG_OLLAMA, "r", encoding="utf-8") as f:
         config = json.load(f)
@@ -159,11 +176,23 @@ def nome_seguro_modelo(modelo):
     return re.sub(r'[^\w\-.]', '_', modelo)
 
 
-def carregar_guia():
+def carregar_guia(com_ponteiros=False):
     if os.path.exists(CAMINHO_GUIA):
         with open(CAMINHO_GUIA, "r", encoding="utf-8") as f:
-            return f.read()
-    return "(guia nao encontrado - traduza seguindo boas praticas de C)"
+            guia = f.read()
+    else:
+        guia = "(guia nao encontrado - traduza seguindo boas praticas de C)"
+
+    if com_ponteiros:
+        # Se a opcao foi pedida mas o arquivo nao existe, para com erro claro
+        # em vez de rodar silenciosamente sem a secao (o que invalidaria o A/B)
+        if not os.path.exists(CAMINHO_GUIA_PONTEIROS):
+            sys.exit(f"ERRO: --ponteiros foi pedido, mas '{CAMINHO_GUIA_PONTEIROS}' "
+                     f"nao foi encontrado na pasta atual.")
+        with open(CAMINHO_GUIA_PONTEIROS, "r", encoding="utf-8") as f:
+            guia += "\n\n---\n\n" + f.read()
+
+    return guia
 
 
 # ============================================================
@@ -406,22 +435,46 @@ def salvar_traducao_valida(entrada, codigo_programa):
         f.write(codigo_programa)
 
 
+def ler_argumentos():
+    parser = argparse.ArgumentParser(description="Pipeline Python -> C (BigCodeBench)")
+    parser.add_argument("modelo", nargs="?", default=None,
+                        help="modelo do Ollama (padrao: o do ollama_config_local.json)")
+    parser.add_argument("--ponteiros", action="store_true",
+                        help="anexa guia_ponteiros.md ao guia")
+    parser.add_argument("--incluir-aninhadas", action="store_true",
+                        help="desliga o filtro de listas aninhadas/matrizes")
+    parser.add_argument("--lote", type=int, default=TAMANHO_LOTE,
+                        help=f"quantas entradas processar (padrao: {TAMANHO_LOTE})")
+    return parser.parse_args()
+
+
 def main():
-    global PASTA_SAIDA, RELATORIO_SAIDA
+    global PASTA_SAIDA, RELATORIO_SAIDA, TAMANHO_LOTE, INCLUIR_ANINHADAS
+
+    args = ler_argumentos()
+    TAMANHO_LOTE = args.lote
+    INCLUIR_ANINHADAS = args.incluir_aninhadas
 
     print("Carregando modelo, guia e candidatas...")
-    modelo = carregar_modelo()
-    guia_texto = carregar_guia()
+    modelo = carregar_modelo(args.modelo)
+    guia_texto = carregar_guia(com_ponteiros=args.ponteiros)
     candidatas = carregar_candidatas()
 
-    # Nomeia a saida com base no modelo, para poder comparar varios
-    # modelos sem que a execucao de um sobrescreva o resultado do outro
+    # Nomeia a saida com base no modelo e nas opcoes, para poder comparar
+    # varias execucoes sem que uma sobrescreva o resultado da outra
     sufixo = nome_seguro_modelo(modelo)
+    if args.incluir_aninhadas:
+        sufixo += "_aninhadas"
+    if args.ponteiros:
+        sufixo += "_ponteiros"
     PASTA_SAIDA = f"traducoes_automaticas_{sufixo}"
     RELATORIO_SAIDA = f"relatorio_pipeline_{sufixo}.json"
 
     print(f"Modelo: {modelo}")
-    print(f"Candidatas selecionadas para este lote: {len(candidatas)}\n")
+    print(f"Secao de ponteiros: {'SIM' if args.ponteiros else 'nao'} | "
+          f"Filtro de listas aninhadas: {'DESLIGADO' if args.incluir_aninhadas else 'ligado'}")
+    print(f"Candidatas selecionadas para este lote: {len(candidatas)}")
+    print("IDs: " + ", ".join(c["id"] for c in candidatas) + "\n")
 
     os.makedirs(PASTA_SAIDA, exist_ok=True)
     relatorio = []

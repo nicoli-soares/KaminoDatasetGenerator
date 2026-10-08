@@ -2,3 +2,5 @@
 *.env
 *.safetensors
 .venv/
+__pycache__/
+traducoes_automaticas_*/*/programa
