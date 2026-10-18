@@ -1,0 +1,8 @@
+HumanEval/0 sucesso 1 
+HumanEval/1 falha 5 ERRO DE EXECUCAO (codigo de saida -6):
+
+programa: traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros/HumanEval_1/programa.c:86: test_case_1: Assertion `size == 3' failed.
+
+HumanEval/2 sucesso 1 
+HumanEval/3 sucesso 1 
+HumanEval/4 sucesso 1 

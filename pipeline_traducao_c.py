@@ -25,6 +25,14 @@ Opcoes (todas opcionais; sem elas o comportamento e o mesmo de antes):
                        para testar se a secao de ponteiros ajuda justamente
                        nesses casos)
   --lote N             quantas entradas processar (padrao: 5)
+  --dataset humaneval  traduz o HumanEval (problemas mais simples) em vez do
+                       BigCodeBench. Precisa do arquivo dataset/humaneval.jsonl
+                       (gerado por baixar_humaneval.py)
+  --arquivo CAMINHO    usa outro arquivo de dataset no lugar do padrao
+
+Exemplo com o HumanEval:
+  python baixar_humaneval.py
+  python pipeline_traducao_c.py deepseek-r1:14b --dataset humaneval --ponteiros
 
 Exemplo de comparacao A/B (mesmo modelo, mesmas entradas):
   python pipeline_traducao_c.py deepseek-r1:14b --incluir-aninhadas
@@ -37,6 +45,7 @@ Saida (nomeada por modelo e opcoes, para nao sobrescrever ao comparar):
 """
 
 import argparse
+import ast
 import json
 import os
 import re
@@ -54,6 +63,9 @@ CAMINHO_DATASET = "dataset/bigcodebench_normalized_filtered.json"
 CAMINHO_CONFIG_OLLAMA = "pipeline/resources/ollama_config_local.json"
 CAMINHO_GUIA = "guia_traducao_python_c.md"
 CAMINHO_GUIA_PONTEIROS = "guia_ponteiros.md"
+CAMINHO_DATASET_HUMANEVAL = "dataset/humaneval.jsonl"
+DATASET = "bigcodebench"    # --dataset humaneval troca para o HumanEval
+ARQUIVO_DATASET = None      # --arquivo troca o caminho do dataset
 
 MAX_TENTATIVAS = 5          # tentativas de reparo por entrada, antes de descartar
 TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao (--lote N altera)
@@ -148,8 +160,107 @@ def eh_candidata_boa(entrada):
     return True
 
 
+# ------------------------------------------------------------
+# HumanEval (--dataset humaneval)
+# Colunas do dataset openai/openai_humaneval: task_id, prompt,
+# canonical_solution, test, entry_point. Cada linha e convertida para o
+# MESMO formato interno do BigCodeBench (id, original_code, test), entao a
+# geracao, o teste e o reparo continuam exatamente iguais.
+# ------------------------------------------------------------
+
+def converter_humaneval(linha):
+    ponto = linha["entry_point"]
+    # prompt = assinatura + docstring; canonical_solution = corpo da funcao
+    codigo = linha["prompt"].rstrip() + "\n" + linha["canonical_solution"].rstrip() + "\n"
+    # remove o dicionario METADATA (nao e teste) e chama check() com a funcao
+    teste = re.sub(r"METADATA\s*=\s*\{.*?\}\s*", "", linha["test"],
+                   count=1, flags=re.DOTALL).strip()
+    teste += f"\n\ncheck({ponto})"
+    return {
+        "id": linha["task_id"],
+        "original_code": codigo,
+        "test": [teste],
+        "metadata": {"fonte": "humaneval", "entry_point": ponto},
+    }
+
+
+def ler_humaneval(caminho):
+    with open(caminho, "r", encoding="utf-8") as f:
+        if caminho.endswith(".jsonl"):
+            linhas = [json.loads(l) for l in f if l.strip()]
+        else:
+            linhas = json.load(f)
+    return [converter_humaneval(l) for l in linhas]
+
+
+def _sem_docstrings(codigo):
+    return re.sub(r'""".*?"""|\'\'\'.*?\'\'\'', "", codigo, flags=re.DOTALL)
+
+
+def _modulos_importados(codigo):
+    modulos = set()
+    padrao = r"^\s*(?:from\s+([\w.]+)\s+import|import\s+([\w., ]+))"
+    for m in re.finditer(padrao, codigo, flags=re.MULTILINE):
+        if m.group(1):
+            modulos.add(m.group(1))
+        else:
+            for nome in m.group(2).split(","):
+                modulos.add(nome.strip().split(" as ")[0].strip())
+    return modulos
+
+
+def eh_candidata_humaneval(entrada):
+    codigo = entrada["original_code"]
+    testes = "\n".join(entrada.get("test", []))
+
+    try:
+        ast.parse(codigo)
+    except SyntaxError:
+        return False
+
+    codigo_sem_doc = _sem_docstrings(codigo)
+
+    # Bibliotecas excluidas, no codigo E nos testes (ex.: o teste do
+    # HumanEval/32 importa random, o que tornaria o teste nao deterministico)
+    for mod in _modulos_importados(codigo) | _modulos_importados(testes):
+        if mod in LIBS_PROBLEMATICAS or mod.split(".")[0] in LIBS_PROBLEMATICAS:
+            return False
+
+    # Tamanho: conta so as linhas de codigo (a docstring do HumanEval e longa)
+    num_linhas = len([l for l in codigo_sem_doc.split("\n") if l.strip()])
+    if num_linhas > MAX_LINHAS_CODIGO:
+        return False
+
+    for texto in (codigo_sem_doc, testes):
+        if "random." in texto or "np." in texto or "numpy." in texto:
+            return False
+        if any(padrao in texto for padrao in PADROES_NAO_DETERMINISTICOS):
+            return False
+
+    if "class " in codigo_sem_doc:
+        return False
+
+    if not INCLUIR_ANINHADAS:
+        baixo = codigo.lower()
+        padroes_lista_aninhada = ["list of lists", "list_of_lists", "list[list[", "matrix", "matriz"]
+        if any(p in baixo for p in padroes_lista_aninhada):
+            return False
+
+    return True
+
+
 def carregar_candidatas():
-    with open(CAMINHO_DATASET, "r", encoding="utf-8") as f:
+    if DATASET == "humaneval":
+        caminho = ARQUIVO_DATASET or CAMINHO_DATASET_HUMANEVAL
+        if not os.path.exists(caminho):
+            sys.exit(f"ERRO: dataset do HumanEval nao encontrado em '{caminho}'.\n"
+                     f"Rode antes:  python baixar_humaneval.py")
+        dados = ler_humaneval(caminho)
+        candidatas = [e for e in dados if eh_candidata_humaneval(e)]
+        print(f"HumanEval: {len(dados)} entradas lidas, {len(candidatas)} passaram no filtro")
+        return candidatas[:TAMANHO_LOTE]
+
+    with open(ARQUIVO_DATASET or CAMINHO_DATASET, "r", encoding="utf-8") as f:
         dados = json.load(f)
     candidatas = [e for e in dados if eh_candidata_boa(e)]
     return candidatas[:TAMANHO_LOTE]
@@ -203,6 +314,19 @@ def montar_prompt_inicial(entrada, guia_texto):
     codigo = entrada["original_code"]
     testes = "\n\n".join(entrada.get("test", []))
 
+    # So o HumanEval informa o nome da funcao principal; no BigCodeBench
+    # o prompt continua exatamente igual ao de antes (para comparar resultados)
+    ponto = entrada.get("metadata", {}).get("entry_point")
+    dica = ""
+    if ponto:
+        dica = (f"\nA funcao principal a traduzir se chama `{ponto}`; mantenha esse "
+                f"nome em C, EXCETO se ele for igual ao de uma funcao da biblioteca "
+                f"padrao do C (ex.: strlen, abs, round, index): nesse caso, use o "
+                f"nome com sufixo `_c` (ex.: `{ponto}_c`) na definicao e nos testes, "
+                f"pois reutilizar o nome da biblioteca causa erro de compilacao. "
+                f"Funcoes auxiliares definidas no codigo Python tambem devem ser "
+                f"traduzidas.\n")
+
     prompt = f"""Voce e um tradutor de codigo Python para C, seguindo ESTRITAMENTE
 as regras abaixo (extraidas de um guia validado em 15 traducoes anteriores):
 
@@ -212,7 +336,7 @@ TAREFA: Traduza a funcao Python abaixo para C, e traduza tambem os testes
 reais fornecidos (NAO invente novos testes). Se algum teste depender de
 random, numpy, Faker, ou checar apenas tipo (isinstance), OMITA esse teste
 especifico e explique o motivo em um comentario no codigo.
-
+{dica}
 REGRAS CRITICAS (sao a causa mais comum de falha - siga com atencao):
 1. Escreva TUDO em um UNICO bloco de codigo: a funcao traduzida, as funcoes
    de teste, e a funcao main() que executa os testes - tudo junto, na ordem
@@ -445,24 +569,36 @@ def ler_argumentos():
                         help="desliga o filtro de listas aninhadas/matrizes")
     parser.add_argument("--lote", type=int, default=TAMANHO_LOTE,
                         help=f"quantas entradas processar (padrao: {TAMANHO_LOTE})")
+    parser.add_argument("--dataset", choices=["bigcodebench", "humaneval"],
+                        default="bigcodebench",
+                        help="qual conjunto de problemas traduzir (padrao: bigcodebench)")
+    parser.add_argument("--arquivo", default=None,
+                        help="caminho do arquivo de dataset (padrao: o do dataset escolhido)")
     return parser.parse_args()
 
 
 def main():
     global PASTA_SAIDA, RELATORIO_SAIDA, TAMANHO_LOTE, INCLUIR_ANINHADAS
+    global DATASET, ARQUIVO_DATASET
 
     args = ler_argumentos()
     TAMANHO_LOTE = args.lote
     INCLUIR_ANINHADAS = args.incluir_aninhadas
+    DATASET = args.dataset
+    ARQUIVO_DATASET = args.arquivo
 
     print("Carregando modelo, guia e candidatas...")
     modelo = carregar_modelo(args.modelo)
     guia_texto = carregar_guia(com_ponteiros=args.ponteiros)
     candidatas = carregar_candidatas()
+    if not candidatas:
+        sys.exit("ERRO: nenhuma entrada passou no filtro de candidatas.")
 
     # Nomeia a saida com base no modelo e nas opcoes, para poder comparar
     # varias execucoes sem que uma sobrescreva o resultado da outra
     sufixo = nome_seguro_modelo(modelo)
+    if args.dataset == "humaneval":
+        sufixo += "_humaneval"
     if args.incluir_aninhadas:
         sufixo += "_aninhadas"
     if args.ponteiros:
@@ -471,6 +607,7 @@ def main():
     RELATORIO_SAIDA = f"relatorio_pipeline_{sufixo}.json"
 
     print(f"Modelo: {modelo}")
+    print(f"Dataset: {args.dataset}")
     print(f"Secao de ponteiros: {'SIM' if args.ponteiros else 'nao'} | "
           f"Filtro de listas aninhadas: {'DESLIGADO' if args.incluir_aninhadas else 'ligado'}")
     print(f"Candidatas selecionadas para este lote: {len(candidatas)}")

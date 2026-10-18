@@ -1,0 +1,32 @@
+[
+  {
+    "id": "HumanEval/0",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/1",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros/HumanEval_1/programa.c:86: test_case_1: Assertion `size == 3' failed.\n"
+  },
+  {
+    "id": "HumanEval/2",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/3",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/4",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": "Test case 1: Passed\nTest case 2: Passed\nTest case 3: Passed\n"
+  }
+]
