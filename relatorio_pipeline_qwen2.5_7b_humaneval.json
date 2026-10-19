@@ -1,0 +1,62 @@
+[
+  {
+    "id": "HumanEval/0",
+    "status": "sucesso",
+    "tentativas": 2,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/1",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_1/programa.c:69: test_separate_paren_groups_c: Assertion `strcmp(result1[0]->grupo, \"()\") == 0' failed.\n"
+  },
+  {
+    "id": "HumanEval/2",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_2/programa.c: In function ‘truncate_number’:\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_2/programa.c:14:61: error: expected ‘)’ before ‘number’\n   14 |     DecimalPart decimalPart = {(float)(number - (float)(int(number)))};\n      |                                                             ^~~~~~\n      |                                                             )\n"
+  },
+  {
+    "id": "HumanEval/3",
+    "status": "sucesso",
+    "tentativas": 5,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/4",
+    "status": "sucesso",
+    "tentativas": 2,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/5",
+    "status": "sucesso",
+    "tentativas": 5,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/6",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c: In function ‘parse_nested_parens’:\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:41:38: error: passing argument 2 of ‘parse_paren_group’ from incompatible pointer type [-Wincompatible-pointer-types]\n   41 |             parse_paren_group(start, &groups[count]);\n      |                                      ^~~~~~~~~~~~~~\n      |                                      |\n      |                                      NivelNestingGroup **\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:20:57: note: expected ‘NivelNestingGroup *’ but argument is of type ‘NivelNestingGroup **’\n   20 | int parse_paren_group(const char* s, NivelNestingGroup* max_depth) {\n      |                                      ~~~~~~~~~~~~~~~~~~~^~~~~~~~~\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:47:30: error: passing argument 2 of ‘parse_paren_group’ from incompatible pointer type [-Wincompatible-pointer-types]\n   47 |     parse_paren_group(start, &groups[count]);\n      |                              ^~~~~~~~~~~~~~\n      |                              |\n      |                              NivelNestingGroup **\ntraducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:20:57: note: expected ‘NivelNestingGroup *’ but argument is of type ‘NivelNestingGroup **’\n   20 | int parse_paren_group(const char* s, NivelNestingGroup* max_depth) {\n      |                                      ~~~~~~~~~~~~~~~~~~~^~~~~~~~~\n"
+  },
+  {
+    "id": "HumanEval/7",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_7/programa.c:38: main: Assertion `strcmp(strings[i], expected[i]) == 0' failed.\n"
+  },
+  {
+    "id": "HumanEval/8",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -11):\n\n"
+  },
+  {
+    "id": "HumanEval/9",
+    "status": "sucesso",
+    "tentativas": 5,
+    "saida": "All tests passed.\n"
+  }
+]

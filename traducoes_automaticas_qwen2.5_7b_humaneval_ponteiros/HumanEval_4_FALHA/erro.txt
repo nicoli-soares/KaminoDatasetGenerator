@@ -1,0 +1,3 @@
+ERRO DE EXECUCAO (codigo de saida -6):
+
+programa: traducoes_automaticas_qwen2.5_7b_humaneval_ponteiros/HumanEval_4/programa.c:33: test_mean_absolute_deviation_c: Assertion `fabs(mean_absolute_deviation_c(numbers1, 4) - 1.0) < 1e-6' failed.

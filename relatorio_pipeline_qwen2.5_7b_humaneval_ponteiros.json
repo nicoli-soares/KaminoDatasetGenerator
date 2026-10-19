@@ -1,0 +1,62 @@
+[
+  {
+    "id": "HumanEval/0",
+    "status": "sucesso",
+    "tentativas": 3,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/1",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_qwen2.5_7b_humaneval_ponteiros/HumanEval_1/programa.c:46: main: Assertion `strcmp(groups[0].group, \"(()())\") == 0' failed.\n"
+  },
+  {
+    "id": "HumanEval/2",
+    "status": "sucesso",
+    "tentativas": 5,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/3",
+    "status": "sucesso",
+    "tentativas": 3,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/4",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_qwen2.5_7b_humaneval_ponteiros/HumanEval_4/programa.c:33: test_mean_absolute_deviation_c: Assertion `fabs(mean_absolute_deviation_c(numbers1, 4) - 1.0) < 1e-6' failed.\n"
+  },
+  {
+    "id": "HumanEval/5",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+  },
+  {
+    "id": "HumanEval/6",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -11):\n\n"
+  },
+  {
+    "id": "HumanEval/7",
+    "status": "sucesso",
+    "tentativas": 3,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/8",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_qwen2.5_7b_humaneval_ponteiros/HumanEval_8/programa.c:38: test_sum_product_c: Assertion `result.soma == expected2[i * 2]' failed.\n"
+  },
+  {
+    "id": "HumanEval/9",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -11):\n\n"
+  }
+]

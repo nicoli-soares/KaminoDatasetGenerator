@@ -1,0 +1,18 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c: In function ‘parse_nested_parens’:
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:41:38: error: passing argument 2 of ‘parse_paren_group’ from incompatible pointer type [-Wincompatible-pointer-types]
+   41 |             parse_paren_group(start, &groups[count]);
+      |                                      ^~~~~~~~~~~~~~
+      |                                      |
+      |                                      NivelNestingGroup **
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:20:57: note: expected ‘NivelNestingGroup *’ but argument is of type ‘NivelNestingGroup **’
+   20 | int parse_paren_group(const char* s, NivelNestingGroup* max_depth) {
+      |                                      ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:47:30: error: passing argument 2 of ‘parse_paren_group’ from incompatible pointer type [-Wincompatible-pointer-types]
+   47 |     parse_paren_group(start, &groups[count]);
+      |                              ^~~~~~~~~~~~~~
+      |                              |
+      |                              NivelNestingGroup **
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_6/programa.c:20:57: note: expected ‘NivelNestingGroup *’ but argument is of type ‘NivelNestingGroup **’
+   20 | int parse_paren_group(const char* s, NivelNestingGroup* max_depth) {
+      |                                      ~~~~~~~~~~~~~~~~~~~^~~~~~~~~

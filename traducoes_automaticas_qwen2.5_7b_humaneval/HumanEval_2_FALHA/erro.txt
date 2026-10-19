@@ -1,0 +1,6 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_2/programa.c: In function ‘truncate_number’:
+traducoes_automaticas_qwen2.5_7b_humaneval/HumanEval_2/programa.c:14:61: error: expected ‘)’ before ‘number’
+   14 |     DecimalPart decimalPart = {(float)(number - (float)(int(number)))};
+      |                                                             ^~~~~~
+      |                                                             )
