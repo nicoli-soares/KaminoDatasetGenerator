@@ -9,7 +9,7 @@
     "id": "HumanEval/1",
     "status": "falha",
     "tentativas": 5,
-    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros/HumanEval_1/programa.c:86: test_case_1: Assertion `size == 3' failed.\n"
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros/HumanEval_1/programa.c:65: test_case_2: Assertion `strcmp(output[3].str, \"((((())))\") == 0' failed.\n"
   },
   {
     "id": "HumanEval/2",
@@ -20,13 +20,43 @@
   {
     "id": "HumanEval/3",
     "status": "sucesso",
-    "tentativas": 1,
+    "tentativas": 2,
     "saida": ""
   },
   {
     "id": "HumanEval/4",
     "status": "sucesso",
     "tentativas": 1,
-    "saida": "Test case 1: Passed\nTest case 2: Passed\nTest case 3: Passed\n"
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/5",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/6",
+    "status": "falha",
+    "tentativas": 5,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros/HumanEval_6/programa.c:56: test1: Assertion `result[1] == 3' failed.\n"
+  },
+  {
+    "id": "HumanEval/7",
+    "status": "sucesso",
+    "tentativas": 3,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/8",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
+  },
+  {
+    "id": "HumanEval/9",
+    "status": "sucesso",
+    "tentativas": 1,
+    "saida": ""
   }
 ]

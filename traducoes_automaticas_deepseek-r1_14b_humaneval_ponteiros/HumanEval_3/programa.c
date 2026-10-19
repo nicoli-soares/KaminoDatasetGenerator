@@ -1,56 +1,34 @@
 int below_zero_c(int operations[], int size) {
     int balance = 0;
+    
     for (int i = 0; i < size; i++) {
         balance += operations[i];
         if (balance < 0) {
             return 1;
         }
     }
+    
     return 0;
 }
 
-void test_case_1() {
-    int ops[] = {};
-    int expected = 0;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
-void test_case_2() {
-    int ops[] = {1, 2, -3, 1, 2, -3};
-    int expected = 0;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
-void test_case_3() {
-    int ops[] = {1, 2, -4, 5, 6};
-    int expected = 1;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
-void test_case_4() {
-    int ops[] = {1, -1, 2, -2, 5, -5, 4, -4};
-    int expected = 0;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
-void test_case_5() {
-    int ops[] = {1, -1, 2, -2, 5, -5, 4, -5};
-    int expected = 1;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
-void test_case_6() {
-    int ops[] = {1, -2, 2, -2, 5, -5, 4, -4};
-    int expected = 1;
-    assert(below_zero_c(ops, sizeof(ops)/sizeof(ops[0])) == expected);
-}
-
 int main() {
-    test_case_1();
-    test_case_2();
-    test_case_3();
-    test_case_4();
-    test_case_5();
-    test_case_6();
+    int arr1[] = {};
+    assert(below_zero_c(arr1, 0) == 0);
+    
+    int arr2[] = {1, 2, -3, 1, 2, -3};
+    assert(below_zero_c(arr2, 6) == 0);
+    
+    int arr3[] = {1, 2, -4, 5, 6};
+    assert(below_zero_c(arr3, 5) == 1);
+    
+    int arr4[] = {1, -1, 2, -2, 5, -5, 4, -4};
+    assert(below_zero_c(arr4, 8) == 0);
+    
+    int arr5[] = {1, -1, 2, -2, 5, -5, 4, -5};
+    assert(below_zero_c(arr5, 8) == 1);
+    
+    int arr6[] = {1, -2, 2, -2, 5, -5, 4, -4};
+    assert(below_zero_c(arr6, 8) == 1);
+    
     return 0;
 }

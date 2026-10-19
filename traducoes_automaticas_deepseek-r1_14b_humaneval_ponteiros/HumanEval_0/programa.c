@@ -1,91 +1,39 @@
 typedef struct {
-    double* numbers;
-    int size;
-    double threshold;
-} NumberCheck;
+    float elem;
+} Numero;
 
-int has_close_elements_c(double* numbers, int size, double threshold) {
-    for (int i = 0; i < size; i++) {
-        for (int j = i + 1; j < size; j++) {
-            double distance = fabs(numbers[i] - numbers[j]);
-            if (distance < threshold) {
-                return 1;
+int has_close_elements_c(const Numero *numbers, int n, float threshold) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i != j) {
+                float distance = fabs(numbers[i].elem - numbers[j].elem);
+                if (distance < threshold) {
+                    return 1;
+                }
             }
         }
     }
     return 0;
 }
 
-void test1() {
-    double nums[] = {1.0, 2.0, 3.9, 4.0, 5.0, 2.2};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.3;
-    if (has_close_elements_c(nums, size, threshold) != 1) {
-        printf("Test 1 failed\n");
-    }
-}
-
-void test2() {
-    double nums[] = {1.0, 2.0, 3.9, 4.0, 5.0, 2.2};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.05;
-    if (has_close_elements_c(nums, size, threshold) != 0) {
-        printf("Test 2 failed\n");
-    }
-}
-
-void test3() {
-    double nums[] = {1.0, 2.0, 5.9, 4.0, 5.0};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.95;
-    if (has_close_elements_c(nums, size, threshold) != 1) {
-        printf("Test 3 failed\n");
-    }
-}
-
-void test4() {
-    double nums[] = {1.0, 2.0, 5.9, 4.0, 5.0};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.8;
-    if (has_close_elements_c(nums, size, threshold) != 0) {
-        printf("Test 4 failed\n");
-    }
-}
-
-void test5() {
-    double nums[] = {1.0, 2.0, 3.0, 4.0, 5.0, 2.0};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.1;
-    if (has_close_elements_c(nums, size, threshold) != 1) {
-        printf("Test 5 failed\n");
-    }
-}
-
-void test6() {
-    double nums[] = {1.1, 2.2, 3.1, 4.1, 5.1};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 1.0;
-    if (has_close_elements_c(nums, size, threshold) != 1) {
-        printf("Test 6 failed\n");
-    }
-}
-
-void test7() {
-    double nums[] = {1.1, 2.2, 3.1, 4.1, 5.1};
-    int size = sizeof(nums)/sizeof(nums[0]);
-    double threshold = 0.5;
-    if (has_close_elements_c(nums, size, threshold) != 0) {
-        printf("Test 7 failed\n");
-    }
+void test_has_close_elements_c() {
+    Numero test1[] = {1.0, 2.0, 3.9, 4.0, 5.0, 2.2};
+    assert(has_close_elements_c(test1, 6, 0.3) == 1);
+    Numero test2[] = {1.0, 2.0, 3.9, 4.0, 5.0, 2.2};
+    assert(has_close_elements_c(test2, 6, 0.05) == 0);
+    Numero test3[] = {1.0, 2.0, 5.9, 4.0, 5.0};
+    assert(has_close_elements_c(test3, 5, 0.95) == 1);
+    Numero test4[] = {1.0, 2.0, 5.9, 4.0, 5.0};
+    assert(has_close_elements_c(test4, 5, 0.8) == 0);
+    Numero test5[] = {1.0, 2.0, 3.0, 4.0, 5.0, 2.0};
+    assert(has_close_elements_c(test5, 6, 0.1) == 1);
+    Numero test6[] = {1.1, 2.2, 3.1, 4.1, 5.1};
+    assert(has_close_elements_c(test6, 5, 1.0) == 1);
+    Numero test7[] = {1.1, 2.2, 3.1, 4.1, 5.1};
+    assert(has_close_elements_c(test7, 5, 0.5) == 0);
 }
 
 int main() {
-    test1();
-    test2();
-    test3();
-    test4();
-    test5();
-    test6();
-    test7();
+    test_has_close_elements_c();
     return 0;
 }

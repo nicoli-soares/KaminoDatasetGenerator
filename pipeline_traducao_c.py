@@ -29,6 +29,12 @@ Opcoes (todas opcionais; sem elas o comportamento e o mesmo de antes):
                        BigCodeBench. Precisa do arquivo dataset/humaneval.jsonl
                        (gerado por baixar_humaneval.py)
   --arquivo CAMINHO    usa outro arquivo de dataset no lugar do padrao
+  --guardar-falhas     nas entradas descartadas, guarda o ultimo codigo gerado
+                       (programa.c) e o erro (erro.txt) em <ID>_FALHA/ para analise
+
+Criterio de sucesso: o programa compila, termina com codigo 0 E os testes sao
+validos (usam assert() e nao imprimem mensagem de falha). Isso evita "sucessos"
+falsos em que o modelo escreve testes que so imprimem o resultado.
 
 Exemplo com o HumanEval:
   python baixar_humaneval.py
@@ -66,6 +72,7 @@ CAMINHO_GUIA_PONTEIROS = "guia_ponteiros.md"
 CAMINHO_DATASET_HUMANEVAL = "dataset/humaneval.jsonl"
 DATASET = "bigcodebench"    # --dataset humaneval troca para o HumanEval
 ARQUIVO_DATASET = None      # --arquivo troca o caminho do dataset
+GUARDAR_FALHAS = False      # --guardar-falhas guarda o codigo/erro das entradas descartadas
 
 MAX_TENTATIVAS = 5          # tentativas de reparo por entrada, antes de descartar
 TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao (--lote N altera)
@@ -353,6 +360,12 @@ REGRAS CRITICAS (sao a causa mais comum de falha - siga com atencao):
 5. Todo tipo customizado (struct, typedef) usado deve ser definido antes de
    ser usado, com um nome especifico para este problema (nunca use nomes
    genericos de exemplo de forma literal).
+6. Todo teste DEVE usar assert() (ja incluido, via assert.h) para comparar o
+   resultado da funcao com o valor esperado, de modo que o programa ABORTE se
+   o resultado estiver errado. NUNCA escreva testes que apenas imprimem o
+   resultado com printf, nem funcoes de teste que so devolvem 0/1 sem que o
+   main() verifique e aborte: um teste que nao falha quando a funcao esta
+   errada e invalido. Para numeros reais use assert(fabs(a - b) < 1e-6).
 
 Responda EXATAMENTE neste formato, sem texto adicional fora do bloco:
 
@@ -417,6 +430,27 @@ def extrair_blocos(texto_resposta):
 # ETAPA 2: TESTING (compilar e rodar)
 # ============================================================
 
+def problema_nos_testes(codigo):
+    """Devolve uma mensagem de erro se os testes nao puderem falhar (testes
+    'vazios', que so imprimem o resultado), ou None se estiverem ok.
+    Sem isso, um programa que apenas imprime 'Test 1 failed' e termina com
+    codigo 0 seria contado como sucesso mesmo com a funcao errada."""
+    sem_comentarios = re.sub(r"/\*.*?\*/|//[^\n]*", "", codigo, flags=re.DOTALL)
+    if "NDEBUG" in sem_comentarios:
+        return ("ERRO: nao defina NDEBUG: isso desliga os assert() e invalida os testes.")
+    if not re.search(r"\bassert\s*\(", sem_comentarios):
+        return ("ERRO: os testes nao sao validos. O programa precisa conter testes que "
+                "usam assert(...) para comparar o resultado da funcao com o valor esperado "
+                "e que ABORTAM se o resultado estiver errado. Nao use apenas printf, nem "
+                "funcoes de teste que so devolvem 0/1. Reescreva os testes com assert().")
+    return None
+
+
+def saida_indica_falha(saida):
+    """True se o programa imprimiu uma mensagem de falha (mesmo saindo com codigo 0)."""
+    return re.search(r"fail|falh", saida, re.IGNORECASE) is not None
+
+
 def compilar_e_testar(codigo_programa, pasta_trabalho):
     os.makedirs(pasta_trabalho, exist_ok=True)
     caminho_c = os.path.join(pasta_trabalho, "programa.c")
@@ -451,6 +485,10 @@ def compilar_e_testar(codigo_programa, pasta_trabalho):
             "EXATAMENTE UMA funcao main() em todo o programa."
         )
 
+    erro_testes = problema_nos_testes(codigo_limpo)
+    if erro_testes:
+        return False, erro_testes
+
     with open(caminho_c, "w", encoding="utf-8") as f:
         f.write(includes_padrao + codigo_limpo + "\n")
 
@@ -475,6 +513,15 @@ def compilar_e_testar(codigo_programa, pasta_trabalho):
         return False, (
             f"ERRO DE EXECUCAO (codigo de saida {resultado_execucao.returncode}):\n"
             f"{resultado_execucao.stdout}\n{resultado_execucao.stderr}"
+        )
+
+    saida_total = resultado_execucao.stdout + resultado_execucao.stderr
+    if saida_indica_falha(saida_total):
+        return False, (
+            "ERRO: o programa terminou com codigo 0, mas imprimiu uma mensagem de "
+            "falha (um teste falhou sem abortar):\n" + saida_total + "\n"
+            "Corrija a funcao e use assert() nos testes, para o programa abortar "
+            "quando um teste falhar."
         )
 
     return True, resultado_execucao.stdout
@@ -533,8 +580,20 @@ def processar_entrada(entrada, modelo, guia_texto):
             "content": montar_prompt_reparo(entrada, codigo_programa, saida_ou_erro)
         })
 
-    # Esgotou as tentativas -> descarta
+    # Esgotou as tentativas -> descarta (ou, com --guardar-falhas, guarda o
+    # ultimo codigo gerado e o erro numa pasta <ID>_FALHA para analise)
     shutil.rmtree(pasta_trabalho, ignore_errors=True)
+    if GUARDAR_FALHAS:
+        pasta_falha = pasta_trabalho + "_FALHA"
+        shutil.rmtree(pasta_falha, ignore_errors=True)
+        os.makedirs(pasta_falha, exist_ok=True)
+        with open(os.path.join(pasta_falha, "funcao.py"), "w", encoding="utf-8") as f:
+            f.write(entrada["original_code"])
+        if codigo_programa:
+            with open(os.path.join(pasta_falha, "programa.c"), "w", encoding="utf-8") as f:
+                f.write(codigo_programa)
+        with open(os.path.join(pasta_falha, "erro.txt"), "w", encoding="utf-8") as f:
+            f.write(str(saida_ou_erro))
     return {
         "id": entry_id, "status": "falha", "tentativas": MAX_TENTATIVAS,
         "ultimo_erro": saida_ou_erro
@@ -574,18 +633,21 @@ def ler_argumentos():
                         help="qual conjunto de problemas traduzir (padrao: bigcodebench)")
     parser.add_argument("--arquivo", default=None,
                         help="caminho do arquivo de dataset (padrao: o do dataset escolhido)")
+    parser.add_argument("--guardar-falhas", action="store_true",
+                        help="guarda o ultimo codigo e o erro das entradas descartadas em <ID>_FALHA/")
     return parser.parse_args()
 
 
 def main():
     global PASTA_SAIDA, RELATORIO_SAIDA, TAMANHO_LOTE, INCLUIR_ANINHADAS
-    global DATASET, ARQUIVO_DATASET
+    global DATASET, ARQUIVO_DATASET, GUARDAR_FALHAS
 
     args = ler_argumentos()
     TAMANHO_LOTE = args.lote
     INCLUIR_ANINHADAS = args.incluir_aninhadas
     DATASET = args.dataset
     ARQUIVO_DATASET = args.arquivo
+    GUARDAR_FALHAS = args.guardar_falhas
 
     print("Carregando modelo, guia e candidatas...")
     modelo = carregar_modelo(args.modelo)

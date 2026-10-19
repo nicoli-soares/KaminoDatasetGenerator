@@ -1,0 +1,3 @@
+ERRO DE EXECUCAO (codigo de saida -6):
+
+programa: traducoes_automaticas_deepseek-r1_14b_humaneval/HumanEval_6/programa.c:100: test1: Assertion `result[0] == 2 && result[1] == 3 && result[2] == 1 && result[3] == 3' failed.
