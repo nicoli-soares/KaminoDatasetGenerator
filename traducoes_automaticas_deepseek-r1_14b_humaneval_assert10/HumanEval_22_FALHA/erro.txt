@@ -1,0 +1,54 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:50:22: error: ‘ValueElement’ has no member named ‘int_val’
+   50 |         {VALUE_INT, .int_val = 4},
+      |                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:51:24: error: ‘ValueElement’ has no member named ‘int_val’
+   51 |         {VALUE_OTHER, .int_val = 0},
+      |                        ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:52:24: error: ‘ValueElement’ has no member named ‘int_val’
+   52 |         {VALUE_OTHER, .int_val = 0},
+      |                        ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:53:24: error: ‘ValueElement’ has no member named ‘float_val’
+   53 |         {VALUE_FLOAT, .float_val = 23.2},
+      |                        ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:54:22: error: ‘ValueElement’ has no member named ‘int_val’
+   54 |         {VALUE_INT, .int_val = 9},
+      |                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:25: error: ‘ValueElement’ has no member named ‘string_val’
+   55 |         {VALUE_STRING, .string_val = "adasd"},
+      |                         ^~~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   55 |         {VALUE_STRING, .string_val = "adasd"},
+      |                                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:38: note: (near initialization for ‘test2[5].value.int_val’)
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:66:22: error: ‘ValueElement’ has no member named ‘int_val’
+   66 |         {VALUE_INT, .int_val = 3},
+      |                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:25: error: ‘ValueElement’ has no member named ‘string_val’
+   67 |         {VALUE_STRING, .string_val = "c"},
+      |                         ^~~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   67 |         {VALUE_STRING, .string_val = "c"},
+      |                                      ^~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:38: note: (near initialization for ‘test3[1].value.int_val’)
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:68:22: error: ‘ValueElement’ has no member named ‘int_val’
+   68 |         {VALUE_INT, .int_val = 3},
+      |                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:69:22: error: ‘ValueElement’ has no member named ‘int_val’
+   69 |         {VALUE_INT, .int_val = 3},
+      |                      ^~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:25: error: ‘ValueElement’ has no member named ‘string_val’
+   70 |         {VALUE_STRING, .string_val = "a"},
+      |                         ^~~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   70 |         {VALUE_STRING, .string_val = "a"},
+      |                                      ^~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:38: note: (near initialization for ‘test3[4].value.int_val’)
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:25: error: ‘ValueElement’ has no member named ‘string_val’
+   71 |         {VALUE_STRING, .string_val = "b"},
+      |                         ^~~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   71 |         {VALUE_STRING, .string_val = "b"},
+      |                                      ^~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:38: note: (near initialization for ‘test3[5].value.int_val’)

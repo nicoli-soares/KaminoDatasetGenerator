@@ -1,0 +1,1 @@
+ERRO: programa entrou em loop infinito ou demorou demais (timeout)

@@ -31,6 +31,14 @@ Opcoes (todas opcionais; sem elas o comportamento e o mesmo de antes):
   --arquivo CAMINHO    usa outro arquivo de dataset no lugar do padrao
   --guardar-falhas     nas entradas descartadas, guarda o ultimo codigo gerado
                        (programa.c) e o erro (erro.txt) em <ID>_FALHA/ para analise
+  --tentativas N       maximo de tentativas normais por entrada (padrao: 5). A cada
+                       falha o LLM recebe o erro e o codigo anterior e traduz de novo.
+                       Com N diferente de 5, o nome da saida ganha o sufixo _tN
+  --tentativas-assert M  se a entrada esgotar as tentativas normais com um assert
+                       falhando (compilou e rodou, mas a resposta saiu errada),
+                       libera ate M tentativas extras, sempre corrigindo o erro
+                       anterior. Erros de compilacao, segfault, timeout ou formato
+                       NAO ganham extras. Padrao: 0 (desligado). Sufixo _assertM
 
 Criterio de sucesso: o programa compila, termina com codigo 0 E os testes sao
 validos (usam assert() e nao imprimem mensagem de falha). Isso evita "sucessos"
@@ -74,7 +82,12 @@ DATASET = "bigcodebench"    # --dataset humaneval troca para o HumanEval
 ARQUIVO_DATASET = None      # --arquivo troca o caminho do dataset
 GUARDAR_FALHAS = False      # --guardar-falhas guarda o codigo/erro das entradas descartadas
 
-MAX_TENTATIVAS = 5          # tentativas de reparo por entrada, antes de descartar
+TENTATIVAS_PADRAO = 5
+MAX_TENTATIVAS = TENTATIVAS_PADRAO   # tentativas de reparo por entrada, antes de descartar (--tentativas N altera)
+TENTATIVAS_EXTRAS_ASSERT = 0   # --tentativas-assert N: tentativas extras so para quem falhou em assert
+JANELA_HISTORICO = 4       # quantos pares (resposta + erro) da conversa ficam no contexto;
+                            # com 4, ate 5 tentativas veem o historico completo (como antes),
+                            # e tentativas longas nao estouram o num_ctx
 TAMANHO_LOTE = 5            # quantas entradas processar nesta execucao (--lote N altera)
 
 # Definidos em main(), com base no modelo e nas opcoes escolhidas (permite
@@ -531,6 +544,14 @@ def compilar_e_testar(codigo_programa, pasta_trabalho):
 # ETAPA 3: REPAIRING + LOOP PRINCIPAL
 # ============================================================
 
+def eh_falha_de_assert(mensagem_erro):
+    """True se o erro e um assert() dos testes que falhou: o programa compilou,
+    rodou e abortou porque o resultado nao bateu com o esperado."""
+    texto = str(mensagem_erro)
+    return (texto.startswith("ERRO DE EXECUCAO")
+            and "Assertion" in texto and "failed" in texto)
+
+
 def processar_entrada(entrada, modelo, guia_texto):
     entry_id = entrada["id"]
     id_seguro = entry_id.replace("/", "_")
@@ -542,9 +563,20 @@ def processar_entrada(entrada, modelo, guia_texto):
 
     codigo_programa = None
     saida_ou_erro = "Nenhuma tentativa produziu resultado (erro inesperado)"
+    historico_erros = []   # primeira parte do erro de cada tentativa que falhou (para analise)
 
-    for tentativa in range(1, MAX_TENTATIVAS + 1):
-        print(f"  [{entry_id}] Tentativa {tentativa}/{MAX_TENTATIVAS}...")
+    def encurtar_historico(msgs):
+        # mantem o prompt inicial + so os ultimos JANELA_HISTORICO pares
+        if len(msgs) - 1 > 2 * JANELA_HISTORICO:
+            return msgs[:1] + msgs[-2 * JANELA_HISTORICO:]
+        return msgs
+
+    limite = MAX_TENTATIVAS      # sobe se a entrada entrar nas tentativas extras de assert
+    tentativas_extras = False
+    tentativa = 0
+    while tentativa < limite:
+        tentativa += 1
+        print(f"  [{entry_id}] Tentativa {tentativa}/{limite}...")
 
         resposta, erro_llm = chamar_llm(modelo, mensagens)
 
@@ -553,6 +585,7 @@ def processar_entrada(entrada, modelo, guia_texto):
             # nao ha resposta para adicionar ao historico, entao encurtamos
             # a conversa para a proxima tentativa (mantem so o prompt inicial)
             saida_ou_erro = erro_llm
+            historico_erros.append(erro_llm[:200])
             print(f"    (erro na chamada ao LLM: {erro_llm[:100]}...)")
             mensagens = [{"role": "user", "content": montar_prompt_inicial(entrada, guia_texto)}]
             continue
@@ -561,8 +594,10 @@ def processar_entrada(entrada, modelo, guia_texto):
 
         if codigo_programa is None:
             saida_ou_erro = "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+            historico_erros.append(saida_ou_erro)
             mensagens.append({"role": "assistant", "content": resposta})
             mensagens.append({"role": "user", "content": f"Formato invalido. {saida_ou_erro}. Responda novamente no formato correto."})
+            mensagens = encurtar_historico(mensagens)
             continue
 
         sucesso, saida_ou_erro = compilar_e_testar(codigo_programa, pasta_trabalho)
@@ -570,15 +605,30 @@ def processar_entrada(entrada, modelo, guia_texto):
         if sucesso:
             return {
                 "id": entry_id, "status": "sucesso", "tentativas": tentativa,
-                "saida": saida_ou_erro
+                "tentativas_extras_assert": tentativas_extras,
+                "saida": saida_ou_erro, "erros_anteriores": historico_erros
             }, codigo_programa
 
-        # Falhou -> prepara reparo
+        # Falhou -> prepara reparo: o LLM recebe o erro e o codigo anterior e
+        # traduz de novo, ate passar nos testes ou esgotar as tentativas
+        historico_erros.append(str(saida_ou_erro).strip()[:200])
         mensagens.append({"role": "assistant", "content": resposta})
         mensagens.append({
             "role": "user",
             "content": montar_prompt_reparo(entrada, codigo_programa, saida_ou_erro)
         })
+        mensagens = encurtar_historico(mensagens)
+
+        # Acabaram as tentativas normais e o ultimo erro foi um assert que
+        # falhou (o programa compilou e rodou, mas a resposta saiu errada):
+        # libera as tentativas extras, so para este tipo de falha. Erros de
+        # compilacao, segfault, timeout ou formato continuam sendo descartados.
+        if (tentativa == limite and not tentativas_extras and TENTATIVAS_EXTRAS_ASSERT > 0
+                and eh_falha_de_assert(saida_ou_erro)):
+            tentativas_extras = True
+            limite += TENTATIVAS_EXTRAS_ASSERT
+            print(f"  [{entry_id}] falhou em assert apos {tentativa} tentativas: "
+                  f"liberando ate {TENTATIVAS_EXTRAS_ASSERT} tentativas extras")
 
     # Esgotou as tentativas -> descarta (ou, com --guardar-falhas, guarda o
     # ultimo codigo gerado e o erro numa pasta <ID>_FALHA para analise)
@@ -595,8 +645,9 @@ def processar_entrada(entrada, modelo, guia_texto):
         with open(os.path.join(pasta_falha, "erro.txt"), "w", encoding="utf-8") as f:
             f.write(str(saida_ou_erro))
     return {
-        "id": entry_id, "status": "falha", "tentativas": MAX_TENTATIVAS,
-        "ultimo_erro": saida_ou_erro
+        "id": entry_id, "status": "falha", "tentativas": tentativa,
+        "tentativas_extras_assert": tentativas_extras,
+        "ultimo_erro": saida_ou_erro, "erros_anteriores": historico_erros
     }, None
 
 
@@ -635,14 +686,27 @@ def ler_argumentos():
                         help="caminho do arquivo de dataset (padrao: o do dataset escolhido)")
     parser.add_argument("--guardar-falhas", action="store_true",
                         help="guarda o ultimo codigo e o erro das entradas descartadas em <ID>_FALHA/")
-    return parser.parse_args()
+    parser.add_argument("--tentativas", type=int, default=TENTATIVAS_PADRAO,
+                        help=f"maximo de tentativas por entrada, cada uma corrigindo o erro da "
+                             f"anterior (padrao: {TENTATIVAS_PADRAO})")
+    parser.add_argument("--tentativas-assert", type=int, default=0,
+                        help="tentativas extras, so para as entradas que esgotaram as tentativas "
+                             "normais com um assert falhando (padrao: 0 = desligado)")
+    args = parser.parse_args()
+    if args.tentativas < 1:
+        parser.error("--tentativas precisa ser pelo menos 1")
+    if args.tentativas_assert < 0:
+        parser.error("--tentativas-assert nao pode ser negativo")
+    return args
 
 
 def main():
     global PASTA_SAIDA, RELATORIO_SAIDA, TAMANHO_LOTE, INCLUIR_ANINHADAS
-    global DATASET, ARQUIVO_DATASET, GUARDAR_FALHAS
+    global DATASET, ARQUIVO_DATASET, GUARDAR_FALHAS, MAX_TENTATIVAS, TENTATIVAS_EXTRAS_ASSERT
 
     args = ler_argumentos()
+    MAX_TENTATIVAS = args.tentativas
+    TENTATIVAS_EXTRAS_ASSERT = args.tentativas_assert
     TAMANHO_LOTE = args.lote
     INCLUIR_ANINHADAS = args.incluir_aninhadas
     DATASET = args.dataset
@@ -665,11 +729,18 @@ def main():
         sufixo += "_aninhadas"
     if args.ponteiros:
         sufixo += "_ponteiros"
+    if args.tentativas != TENTATIVAS_PADRAO:
+        sufixo += f"_t{args.tentativas}"
+    if args.tentativas_assert > 0:
+        sufixo += f"_assert{args.tentativas_assert}"
     PASTA_SAIDA = f"traducoes_automaticas_{sufixo}"
     RELATORIO_SAIDA = f"relatorio_pipeline_{sufixo}.json"
 
     print(f"Modelo: {modelo}")
     print(f"Dataset: {args.dataset}")
+    print(f"Tentativas por entrada: ate {MAX_TENTATIVAS}"
+          + (f" (+{TENTATIVAS_EXTRAS_ASSERT} extras se falhar em assert)"
+             if TENTATIVAS_EXTRAS_ASSERT else ""))
     print(f"Secao de ponteiros: {'SIM' if args.ponteiros else 'nao'} | "
           f"Filtro de listas aninhadas: {'DESLIGADO' if args.incluir_aninhadas else 'ligado'}")
     print(f"Candidatas selecionadas para este lote: {len(candidatas)}")

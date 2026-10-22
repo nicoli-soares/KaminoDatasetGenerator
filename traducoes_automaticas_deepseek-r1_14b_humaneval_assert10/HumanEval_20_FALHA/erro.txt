@@ -1,0 +1,7 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c: In function ‘find_closest_elements’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:17:26: error: ‘FLT_INFINITY’ undeclared (first use in this function); did you mean ‘FP_INFINITE’?
+   17 |     float min_distance = FLT_INFINITY; // Initialize with a very large value
+      |                          ^~~~~~~~~~~~
+      |                          FP_INFINITE
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:17:26: note: each undeclared identifier is reported only once for each function it appears in

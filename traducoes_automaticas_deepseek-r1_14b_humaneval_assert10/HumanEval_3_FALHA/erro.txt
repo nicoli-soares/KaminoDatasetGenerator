@@ -1,0 +1,49 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’
+   10 | bool below_zero(int operations[], int size) {
+      | ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:8:1: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+    7 | #include <assert.h>
+  +++ |+#include <stdbool.h>
+    8 | 
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘below_zero’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: error: ‘true’ undeclared (first use in this function)
+   15 |             return true;
+      |                    ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: note: each undeclared identifier is reported only once for each function it appears in
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:18:12: error: ‘false’ undeclared (first use in this function)
+   18 |     return false;
+      |            ^~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:18:12: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+In file included from traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:7:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_1’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:23:36: error: ‘false’ undeclared (first use in this function)
+   23 |     assert(below_zero(empty, 0) == false);
+      |                                    ^~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:23:36: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_2’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:28:34: error: ‘false’ undeclared (first use in this function)
+   28 |     assert(below_zero(ops, 6) == false);
+      |                                  ^~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:28:34: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_3’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:33:34: error: ‘true’ undeclared (first use in this function)
+   33 |     assert(below_zero(ops, 5) == true);
+      |                                  ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:33:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_4’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:38:34: error: ‘false’ undeclared (first use in this function)
+   38 |     assert(below_zero(ops, 8) == false);
+      |                                  ^~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:38:34: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_5’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:43:34: error: ‘true’ undeclared (first use in this function)
+   43 |     assert(below_zero(ops, 8) == true);
+      |                                  ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:43:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_6’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:48:34: error: ‘true’ undeclared (first use in this function)
+   48 |     assert(below_zero(ops, 8) == true);
+      |                                  ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:48:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’

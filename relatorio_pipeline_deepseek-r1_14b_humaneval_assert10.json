@@ -1,0 +1,422 @@
+[
+  {
+    "id": "HumanEval/0",
+    "status": "sucesso",
+    "tentativas": 3,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_0/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool has_close_elements(float numbers[], int length, f",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_0/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool has_close_elements(float numbers[], int length, f"
+    ]
+  },
+  {
+    "id": "HumanEval/1",
+    "status": "falha",
+    "tentativas": 15,
+    "tentativas_extras_assert": true,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:82: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' failed.\n",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c: In function ‘separate_paren_groups_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/Hum",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:63: test_case_1: Assertion `strcmp(output.data[0], \"(())()\") == 0' fai",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:75: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:74: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:74: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:74: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:84: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:84: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:84: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:84: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:81: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:79: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:82: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' ",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1/programa.c:82: test_case_2: Assertion `strcmp(output.data[3], \"((((())))\") == 0' "
+    ]
+  },
+  {
+    "id": "HumanEval/2",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\nIn file included from traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_2/programa.c:7:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_2/progra"
+    ]
+  },
+  {
+    "id": "HumanEval/3",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool below_zero(int operations[], int size) {\n      | ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:8:1: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\n    7 | #include <assert.h>\n  +++ |+#include <stdbool.h>\n    8 | \ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘below_zero’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: error: ‘true’ undeclared (first use in this function)\n   15 |             return true;\n      |                    ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:15:20: note: each undeclared identifier is reported only once for each function it appears in\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:18:12: error: ‘false’ undeclared (first use in this function)\n   18 |     return false;\n      |            ^~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:18:12: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\nIn file included from traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:7:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_1’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:23:36: error: ‘false’ undeclared (first use in this function)\n   23 |     assert(below_zero(empty, 0) == false);\n      |                                    ^~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:23:36: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_2’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:28:34: error: ‘false’ undeclared (first use in this function)\n   28 |     assert(below_zero(ops, 6) == false);\n      |                                  ^~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:28:34: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_3’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:33:34: error: ‘true’ undeclared (first use in this function)\n   33 |     assert(below_zero(ops, 5) == true);\n      |                                  ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:33:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_4’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:38:34: error: ‘false’ undeclared (first use in this function)\n   38 |     assert(below_zero(ops, 8) == false);\n      |                                  ^~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:38:34: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_5’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:43:34: error: ‘true’ undeclared (first use in this function)\n   43 |     assert(below_zero(ops, 8) == true);\n      |                                  ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:43:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c: In function ‘test_case_6’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:48:34: error: ‘true’ undeclared (first use in this function)\n   48 |     assert(below_zero(ops, 8) == true);\n      |                                  ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:48:34: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\n",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:9:1: error: unknown type name ‘bool’\n    9 | bool below_zero(int operations[], int size) {\n      | ^",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool below_zero(int operations[], int size) {\n      | ",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool below_zero(int operations[], int size) {\n      | ",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool below_zero(int operations[], int size) {\n      | ",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_3/programa.c:10:1: error: unknown type name ‘bool’\n   10 | bool below_zero(int operations[], int size) {\n      | "
+    ]
+  },
+  {
+    "id": "HumanEval/4",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/5",
+    "status": "sucesso",
+    "tentativas": 3,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_5/programa.c: In function ‘test_case_2’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_5/pro",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_5/programa.c: In function ‘test_case_2’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_5/pro"
+    ]
+  },
+  {
+    "id": "HumanEval/6",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_6/programa.c: In function ‘split_groups’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_6/pr"
+    ]
+  },
+  {
+    "id": "HumanEval/7",
+    "status": "sucesso",
+    "tentativas": 3,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_7/programa.c: In function ‘test_filter_by_substring_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_7/programa.c:44: test_filter_by_substring_c: Assertion `result == NULL' failed."
+    ]
+  },
+  {
+    "id": "HumanEval/8",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/9",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/10",
+    "status": "sucesso",
+    "tentativas": 3,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_10/programa.c: In function ‘is_palindrome_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_10/programa.c:81: test_make_palindrome_c: Assertion `make_palindrome_c(\"\") == \"\"' f"
+    ]
+  },
+  {
+    "id": "HumanEval/11",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/12",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE EXECUCAO (codigo de saida -11):\n\n",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_12/programa.c:43: test_longest: Assertion `longest(test3, 6) == \"zzzz\"' failed.",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_12/programa.c:43: test_longest: Assertion `longest(test3, 6) == \"zzzz\"' failed.",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_12/programa.c:43: test_longest: Assertion `longest(test3, 6) == \"zzzz\"' failed.",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_12/programa.c:43: test_longest: Assertion `longest(test3, 6) == \"zzzz\"' failed.",
+      "ERRO DE EXECUCAO (codigo de saida -11):"
+    ]
+  },
+  {
+    "id": "HumanEval/13",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/14",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/15",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_15/programa.c:14:16: error: expected ‘;’ before ‘NumeroStr’\n   14 | NumeroStr* cria NumeroStr(int num) {\n      | "
+    ]
+  },
+  {
+    "id": "HumanEval/16",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c:11:5: error: unknown type name ‘bool’\n   11 |     bool letters[26] = {0};\n      |     ^~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c:8:1: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’\n    7 | #include <assert.h>\n  +++ |+#include <stdbool.h>\n    8 | \n",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/"
+    ]
+  },
+  {
+    "id": "HumanEval/17",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -11):",
+      "ERRO DE EXECUCAO (codigo de saida -11):",
+      "ERRO DE EXECUCAO (codigo de saida -11):",
+      "ERRO DE EXECUCAO (codigo de saida -11):",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/18",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/19",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO: programa entrou em loop infinito ou demorou demais (timeout)",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_19/programa.c: In function ‘sort_numbers_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_19/programa.c: In function ‘sort_numbers_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_19/programa.c: In function ‘sort_numbers_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_1",
+      "ERRO: programa entrou em loop infinito ou demorou demais (timeout)",
+      "ERRO: programa entrou em loop infinito ou demorou demais (timeout)"
+    ]
+  },
+  {
+    "id": "HumanEval/20",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c: In function ‘find_closest_elements’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:17:26: error: ‘FLT_INFINITY’ undeclared (first use in this function); did you mean ‘FP_INFINITE’?\n   17 |     float min_distance = FLT_INFINITY; // Initialize with a very large value\n      |                          ^~~~~~~~~~~~\n      |                          FP_INFINITE\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:17:26: note: each undeclared identifier is reported only once for each function it appears in\n",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:47: main: Assertion `find_closest_elements((float[]){1.0, 2.0, 3.9, 4",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:49: main: Assertion `find_closest_elements((float[]){1.0, 2.0, 3.9, 4",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c: In function ‘find_closest_elements’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/Huma",
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c:44: main: Assertion `find_closest_elements((float[]){1.0, 2.0, 3.9, 4",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_20/programa.c: In function ‘find_closest_elements’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/Huma"
+    ]
+  },
+  {
+    "id": "HumanEval/21",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/22",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:50:22: error: ‘ValueElement’ has no member named ‘int_val’\n   50 |         {VALUE_INT, .int_val = 4},\n      |                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:51:24: error: ‘ValueElement’ has no member named ‘int_val’\n   51 |         {VALUE_OTHER, .int_val = 0},\n      |                        ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:52:24: error: ‘ValueElement’ has no member named ‘int_val’\n   52 |         {VALUE_OTHER, .int_val = 0},\n      |                        ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:53:24: error: ‘ValueElement’ has no member named ‘float_val’\n   53 |         {VALUE_FLOAT, .float_val = 23.2},\n      |                        ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:54:22: error: ‘ValueElement’ has no member named ‘int_val’\n   54 |         {VALUE_INT, .int_val = 9},\n      |                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:25: error: ‘ValueElement’ has no member named ‘string_val’\n   55 |         {VALUE_STRING, .string_val = \"adasd\"},\n      |                         ^~~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]\n   55 |         {VALUE_STRING, .string_val = \"adasd\"},\n      |                                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:55:38: note: (near initialization for ‘test2[5].value.int_val’)\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:66:22: error: ‘ValueElement’ has no member named ‘int_val’\n   66 |         {VALUE_INT, .int_val = 3},\n      |                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:25: error: ‘ValueElement’ has no member named ‘string_val’\n   67 |         {VALUE_STRING, .string_val = \"c\"},\n      |                         ^~~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]\n   67 |         {VALUE_STRING, .string_val = \"c\"},\n      |                                      ^~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:67:38: note: (near initialization for ‘test3[1].value.int_val’)\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:68:22: error: ‘ValueElement’ has no member named ‘int_val’\n   68 |         {VALUE_INT, .int_val = 3},\n      |                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:69:22: error: ‘ValueElement’ has no member named ‘int_val’\n   69 |         {VALUE_INT, .int_val = 3},\n      |                      ^~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:25: error: ‘ValueElement’ has no member named ‘string_val’\n   70 |         {VALUE_STRING, .string_val = \"a\"},\n      |                         ^~~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]\n   70 |         {VALUE_STRING, .string_val = \"a\"},\n      |                                      ^~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:70:38: note: (near initialization for ‘test3[4].value.int_val’)\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:25: error: ‘ValueElement’ has no member named ‘string_val’\n   71 |         {VALUE_STRING, .string_val = \"b\"},\n      |                         ^~~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:38: error: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]\n   71 |         {VALUE_STRING, .string_val = \"b\"},\n      |                                      ^~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c:71:38: note: (near initialization for ‘test3[5].value.int_val’)\n",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_22/programa"
+    ]
+  },
+  {
+    "id": "HumanEval/23",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/24",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/25",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘check’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:39:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   39 |     result = candidate(2);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:43:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   43 |     result = candidate(4);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:48:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   48 |     result = candidate(8);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:54:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   54 |     result = candidate(3*19);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:59:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   59 |     result = candidate(3*19*3*19);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:66:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   66 |     result = candidate(3*19*19*19);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:73:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’\n   73 |     result = candidate(3*2*3);\n      |              ^~~~~~~~~\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘main’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:81:11: error: passing argument 1 of ‘check’ from incompatible pointer type [-Wincompatible-pointer-types]\n   81 |     check(factorize_c);\n      |           ^~~~~~~~~~~\n      |           |\n      |           FactorResult (*)(int)\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:36:19: note: expected ‘int * (*)(int)’ but argument is of type ‘FactorResult (*)(int)’\n   36 | void check(int* (*candidate)(int)) {\n      |            ~~~~~~~^~~~~~~~~~~~~~~\n",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘check’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/program",
+      "ERRO: os testes nao sao validos. O programa precisa conter testes que usam assert(...) para comparar o resultado da funcao com o valor esperado e que ABORTAM se o resultado estiver errado. Nao use ape",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘check’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/program",
+      "ERRO DE COMPILACAO:\nIn file included from traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:7:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/prog",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘check’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/program"
+    ]
+  },
+  {
+    "id": "HumanEval/26",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/27",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_27/programa.c:28: main: Assertion `flip_case_c(\"\") == \"\"' failed."
+    ]
+  },
+  {
+    "id": "HumanEval/28",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_28/programa.c:33: test_concatenate: Assertion `concatenate_c(NULL, 0) == NULL' fail"
+    ]
+  },
+  {
+    "id": "HumanEval/29",
+    "status": "falha",
+    "tentativas": 5,
+    "tentativas_extras_assert": false,
+    "ultimo_erro": "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+    "erros_anteriores": [
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/30",
+    "status": "sucesso",
+    "tentativas": 4,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE EXECUCAO (codigo de saida -6):\n\nprograma: traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_30/programa.c:29: test_positive: Assertion `get_positive_c(test1_input, 5) == test1",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_30/programa.c:26:1: error: unknown type name ‘bool’\n   26 | bool compare_arrays(int* a, int* b, int size) {\n     ",
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_30/programa.c:27:1: error: unknown type name ‘bool’\n   27 | bool compare_arrays(int* a, int* b, int size) {\n     "
+    ]
+  },
+  {
+    "id": "HumanEval/31",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/33",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/34",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/35",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/36",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/37",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "All test cases passed\n",
+    "erros_anteriores": [
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/39",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_39/programa.c: In function ‘check_c’:\ntraducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_39/progr"
+    ]
+  },
+  {
+    "id": "HumanEval/40",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/41",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  }
+]

@@ -1,0 +1,22 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:11:5: error: unknown type name ‘bool’
+   11 |     bool seen;
+      |     ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:8:1: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+    7 | #include <assert.h>
+  +++ |+#include <stdbool.h>
+    8 | 
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c: In function ‘unique_c’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:24:9: error: unknown type name ‘bool’
+   24 |         bool is_unique = true;
+      |         ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:24:9: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:24:26: error: ‘true’ undeclared (first use in this function)
+   24 |         bool is_unique = true;
+      |                          ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:24:26: note: ‘true’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:24:26: note: each undeclared identifier is reported only once for each function it appears in
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:27:29: error: ‘false’ undeclared (first use in this function)
+   27 |                 is_unique = false;
+      |                             ^~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_ponteiros_assert10/HumanEval_34/programa.c:27:29: note: ‘false’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’

@@ -1,0 +1,32 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘check’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:39:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   39 |     result = candidate(2);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:43:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   43 |     result = candidate(4);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:48:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   48 |     result = candidate(8);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:54:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   54 |     result = candidate(3*19);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:59:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   59 |     result = candidate(3*19*3*19);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:66:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   66 |     result = candidate(3*19*19*19);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:73:14: error: incompatible types when assigning to type ‘FactorResult’ from type ‘int *’
+   73 |     result = candidate(3*2*3);
+      |              ^~~~~~~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c: In function ‘main’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:81:11: error: passing argument 1 of ‘check’ from incompatible pointer type [-Wincompatible-pointer-types]
+   81 |     check(factorize_c);
+      |           ^~~~~~~~~~~
+      |           |
+      |           FactorResult (*)(int)
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_25/programa.c:36:19: note: expected ‘int * (*)(int)’ but argument is of type ‘FactorResult (*)(int)’
+   36 | void check(int* (*candidate)(int)) {
+      |            ~~~~~~~^~~~~~~~~~~~~~~

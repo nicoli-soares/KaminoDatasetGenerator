@@ -1,0 +1,9 @@
+ERRO DE COMPILACAO:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c: In function ‘count_distinct_characters’:
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c:11:5: error: unknown type name ‘bool’
+   11 |     bool letters[26] = {0};
+      |     ^~~~
+traducoes_automaticas_deepseek-r1_14b_humaneval_assert10/HumanEval_16/programa.c:8:1: note: ‘bool’ is defined in header ‘<stdbool.h>’; this is probably fixable by adding ‘#include <stdbool.h>’
+    7 | #include <assert.h>
+  +++ |+#include <stdbool.h>
+    8 | 
