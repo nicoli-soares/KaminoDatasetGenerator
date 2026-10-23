@@ -1,0 +1,334 @@
+[
+  {
+    "id": "HumanEval/0",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/1",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/2",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/3",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/4",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/5",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/6",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/7",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\ntraducoes_automaticas_gpt-oss_20b_humaneval_ponteiros_assert10/HumanEval_7/programa.c: In function ‘test_filter_by_substring’:\ntraducoes_automaticas_gpt-oss_20b_humaneval_ponteiros"
+    ]
+  },
+  {
+    "id": "HumanEval/8",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/9",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/10",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/11",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/12",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/13",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/14",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/15",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/16",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/17",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/18",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/19",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/20",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/21",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/22",
+    "status": "sucesso",
+    "tentativas": 4,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)",
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/23",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/24",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/25",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/26",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/27",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/28",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/29",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/30",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "Resposta do LLM nao seguiu o formato esperado (bloco c_programa ausente)"
+    ]
+  },
+  {
+    "id": "HumanEval/31",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/33",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/34",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/35",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/36",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/37",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/39",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  },
+  {
+    "id": "HumanEval/40",
+    "status": "sucesso",
+    "tentativas": 2,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": [
+      "ERRO DE COMPILACAO:\nIn file included from traducoes_automaticas_gpt-oss_20b_humaneval_ponteiros_assert10/HumanEval_40/programa.c:7:\ntraducoes_automaticas_gpt-oss_20b_humaneval_ponteiros_assert10/Human"
+    ]
+  },
+  {
+    "id": "HumanEval/41",
+    "status": "sucesso",
+    "tentativas": 1,
+    "tentativas_extras_assert": false,
+    "saida": "",
+    "erros_anteriores": []
+  }
+]

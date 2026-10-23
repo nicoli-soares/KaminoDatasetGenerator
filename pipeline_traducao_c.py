@@ -365,8 +365,9 @@ REGRAS CRITICAS (sao a causa mais comum de falha - siga com atencao):
    qualquer .h que voce mesmo inventar) - o codigo deve ser totalmente
    autocontido em um unico arquivo.
 3. NAO inclua #include de bibliotecas padrao (stdio.h, stdlib.h, string.h,
-   math.h, ctype.h) - isso ja e adicionado automaticamente. Comece direto
-   pelas structs/funcoes.
+   math.h, ctype.h, limits.h, stdbool.h, stdint.h, assert.h) - isso ja e
+   adicionado automaticamente (voce pode usar bool/true/false e uint64_t).
+   Comece direto pelas structs/funcoes.
 4. NUNCA chame uma funcao que voce mesmo nao implementou. C nao tem
    bibliotecas equivalentes as bibliotecas Python (base64, html, textwrap,
    json, yaml). Se precisar dessa logica, implemente voce mesmo em C puro.
@@ -443,6 +444,30 @@ def extrair_blocos(texto_resposta):
 # ETAPA 2: TESTING (compilar e rodar)
 # ============================================================
 
+# Includes padrao adicionados automaticamente - nao dependemos do LLM lembrar
+# disso. stdbool.h e stdint.h ficam na lista porque o codigo traduzido usa
+# bool/true/false e uint64_t com frequencia (sem eles, nao compila).
+INCLUDES_PADRAO = (
+    "#include <stdio.h>\n"
+    "#include <stdlib.h>\n"
+    "#include <string.h>\n"
+    "#include <math.h>\n"
+    "#include <ctype.h>\n"
+    "#include <limits.h>\n"
+    "#include <stdbool.h>\n"
+    "#include <stdint.h>\n"
+    "#include <assert.h>\n\n"
+)
+
+
+def remover_includes(codigo):
+    """Remove qualquer #include que o LLM tenha gerado por conta propria (tanto
+    includes padrao duplicados quanto headers customizados inventados, como
+    "task_func.h", que nunca existem de verdade)."""
+    linhas = codigo.split("\n")
+    return "\n".join(l for l in linhas if not l.strip().startswith("#include"))
+
+
 def problema_nos_testes(codigo):
     """Devolve uma mensagem de erro se os testes nao puderem falhar (testes
     'vazios', que so imprimem o resultado), ou None se estiverem ok.
@@ -471,22 +496,7 @@ def compilar_e_testar(codigo_programa, pasta_trabalho):
 
     # Includes padrao adicionados automaticamente - nao dependemos do LLM
     # lembrar disso (Causa raiz identificada no piloto: includes ausentes)
-    includes_padrao = (
-        "#include <stdio.h>\n"
-        "#include <stdlib.h>\n"
-        "#include <string.h>\n"
-        "#include <math.h>\n"
-        "#include <ctype.h>\n"
-        "#include <limits.h>\n"
-        "#include <assert.h>\n\n"
-    )
-
-    # Remove qualquer #include que o LLM tenha gerado por conta propria
-    # (tanto includes padrao duplicados quanto headers customizados
-    # inventados, como "task_func.h", que nunca existem de verdade)
-    def remover_includes(codigo):
-        linhas = codigo.split("\n")
-        return "\n".join(l for l in linhas if not l.strip().startswith("#include"))
+    includes_padrao = INCLUDES_PADRAO
 
     codigo_limpo = remover_includes(codigo_programa)
 
@@ -659,6 +669,10 @@ def salvar_traducao_valida(entrada, codigo_programa):
 
     with open(os.path.join(pasta, "funcao.py"), "w", encoding="utf-8") as f:
         f.write(entrada["original_code"])
+
+    # O programa.c salvo ja leva os includes padrao no topo, para compilar
+    # sozinho (com gcc programa.c -lm) do mesmo jeito que foi testado.
+    codigo_programa = INCLUDES_PADRAO + remover_includes(codigo_programa).lstrip("\n")
 
     # Nota: diferente das traducoes manuais (que separam funcao.c e teste.c),
     # a geracao automatizada salva tudo em um unico arquivo programa.c.
